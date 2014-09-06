@@ -1,0 +1,22 @@
+[
+    {
+        "id":1,
+        "name":"T-Shirt",
+        "rice": 10.00
+    },
+    {
+        "id":2,
+        "name":"Trousers",
+        "price": 15.00
+    },
+    {
+        "id":3,
+        "name":"Sport Shirt",
+        "price": 12.00
+    },
+    {
+        "id":4,
+        "name":"Shorts",
+        "price": 5.00
+    }
+]
