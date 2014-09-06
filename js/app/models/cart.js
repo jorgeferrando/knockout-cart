@@ -1,13 +1,7 @@
-(function () {
-    'use strict';
+function Cart(lines) {
+    "use strict";
 
-    function Cart(lines) {
+    this.lines = lines || [];
+    this.total = 0.00;
 
-        this.lines = lines || [];
-        this.total = 0.00;
-
-    }
-
-    return Cart;
-}());
-
+}

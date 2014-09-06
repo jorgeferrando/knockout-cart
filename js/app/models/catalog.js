@@ -1,11 +1,5 @@
-(function () {
-    'use strict';
+function Catalog(products) {
+    "use strict";
 
-    function Catalog(products) {
-
-        this.products = products || [];
-
-    }
-
-    return Catalog;
-}());
+    this.products = products || [];
+}

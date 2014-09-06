@@ -2,7 +2,7 @@
     {
         "id":1,
         "name":"T-Shirt",
-        "rice": 10.00
+        "rice": 20.00
     },
     {
         "id":2,
@@ -12,7 +12,7 @@
     {
         "id":3,
         "name":"Sport Shirt",
-        "price": 12.00
+        "price": 10.00
     },
     {
         "id":4,
