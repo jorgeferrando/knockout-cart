@@ -7,31 +7,35 @@
 </head>
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xs-12">
-                <h1>Product</h1>
-                <div>
-                    <strong>ID:</strong><input class="form-control" type="text" data-bind="{textInput:product.id}"></span><br/>
-                    <strong>Name:</strong><input class="form-control" type="text" data-bind="{textInput:product.name}"></span><br/>
-                    <strong>Price:</strong><input class="form-control" type="text" data-bind="{textInput:product.price}"></span><br/>
-                    <strong>Stock:</strong><input class="form-control" type="text" data-bind="{textInput:product.stock}"></span><br/>
-                </div>
-                <div>
-                    <strong>ID:</strong><span data-bind="{text:product.id}"></span><br/>
-                    <strong>Name:</strong><span data-bind="{text:product.name}"></span><br/>
-                    <strong>Price:</strong><span data-bind="{text:product.price}"></span><br/>
-                    <strong>Stock:</strong><span data-bind="{text:product.stock}"></span>
-                </div>
-            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>Catalog</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 
-    <!-- libraries -->
-    <script type="text/javascript" src="js/vendors/jquery.min.js"></script>
-    <script type="text/javascript" src="js/vendors/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/vendors/knockout.debug.js"></script>
-    <script type="text/javascript" src="js/models/product.js"></script>
-    <script type="text/javascript" src="js/viewmodel.js"></script>
+<!-- libraries -->
+<script type="text/javascript" src="js/vendors/jquery.min.js"></script>
+<script type="text/javascript" src="js/vendors/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/vendors/knockout.debug.js"></script>
+<script type="text/javascript" src="js/models/product.js"></script>
+<script type="text/javascript" src="js/viewmodel.js"></script>
 </body>
 </html>
