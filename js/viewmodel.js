@@ -50,7 +50,7 @@ var vm = (function () {
             while (i--) {
                 var prop = fields[i];
                 if (item.hasOwnProperty(prop) && ko.isObservable(item[prop])) {
-                    var strProp = (item[prop]() + "").toLocaleLowerCase();
+                    var strProp = ko.utils.unwrapObservable(item[prop]).toLocaleLowerCase();
                     if (item[prop]() && (strProp.indexOf(filter) !== -1)) {
                         return true;
                     }
