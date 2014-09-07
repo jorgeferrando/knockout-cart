@@ -7,48 +7,16 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-default navbar-inverse" role="navigation">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">Brand</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a href="#">Catalog</a></li>
-                    <li><a href="#">My Cart</a></li>
-                </ul>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-    </nav>
-
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
-                <h1>Catalog</h1>
-                <table class="table">
-                    <thead>
-                        <th>Product</th>
-                        <th>Price</th>
-                    </thead>
-                    <tbody data-bind="foreach: catalog">
-                        <tr>
-                            <td data-bind="{text : name}"></td>
-                            <td data-bind="{text : price}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-6">
-                <h1>Product Details</h1>
+            <div class="col-xs-12">
+                <h1>Product</h1>
+                <div>
+                    <strong>ID:</strong><span data-bind="{text:product.id}"></span><br/>
+                    <strong>Name:</strong><span data-bind="{text:product.name}"></span><br/>
+                    <strong>Price:</strong><span data-bind="{text:product.price}"></span><br/>
+                    <strong>Stock:</strong><span data-bind="{text:product.stock}"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -57,5 +25,7 @@
     <script type="text/javascript" src="js/vendors/jquery.min.js"></script>
     <script type="text/javascript" src="js/vendors/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/vendors/knockout.debug.js"></script>
+    <script type="text/javascript" src="js/models/product.js"></script>
+    <script type="text/javascript" src="js/viewmodel.js"></script>
 </body>
 </html>
