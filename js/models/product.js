@@ -1,4 +1,4 @@
-function Product(id,name,price,stock) {
+var Product = function (id,name,price,stock) {
     "use strict";
 
     var
@@ -14,4 +14,4 @@ function Product(id,name,price,stock) {
         price:_price,
         stock:_stock
     };
-}
+};

@@ -33,6 +33,10 @@
                     </div>
                 </div>
             </form>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i> Search</span>
+                <input type="text" class="form-control" data-bind="textInput:searchTerm, valueUpdate: 'keyup'">
+            </div>
             <strong>Items:</strong><span data-bind="{text:catalog().length}"></span>
             <table class="table">
                 <thead>

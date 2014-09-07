@@ -27,12 +27,43 @@ var vm = (function () {
             data.price(),
             data.stock()
         );
-        vm.catalog.push(product);
+        catalog.push(product);
         newProduct.clear();
     };
 
+    var searchTerm = ko.observable("");
+
+    var filteredCatalog = ko.computed(function () {
+        //if catalog is empty return empty array
+        if (!catalog()) {
+            return [];
+        }
+        var filter = searchTerm().toLowerCase();
+        //if filter is empty return all the catalog
+        if (!filter) {
+            return catalog();
+        }
+        //filter data
+        var filtered = ko.utils.arrayFilter(catalog(), function (item) {
+            var fields = ["name"]; //we can filter several properties
+            var i = fields.length;
+            while (i--) {
+                var prop = fields[i];
+                if (item.hasOwnProperty(prop) && ko.isObservable(item[prop])) {
+                    var strProp = (item[prop]() + "").toLocaleLowerCase();
+                    if (item[prop]() && (strProp.indexOf(filter) !== -1)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+        return filtered;
+    });
+
     return {
-        catalog: catalog,
+        searchTerm: searchTerm,
+        catalog: filteredCatalog,
         newProduct: newProduct,
         addProduct: addProduct
     };
