@@ -106,7 +106,7 @@
     <form class="form-horizontal" role="form" data-bind="with:newProduct">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h3>Add New Produto to the Catalog</h3>
+            <h3>Add New Product to the Catalog</h3>
         </div>
         <div class="modal-body">
             <div class="form-group">
@@ -152,6 +152,7 @@
             <tr>
                 <th>Name</th>
                 <th>Price</th>
+                <th>Units</th>
                 <th>Subtotal</th>
             </tr>
             </thead>
@@ -169,6 +170,7 @@
             </tbody>
             <tfoot>
             <tr>
+                <td colspan="3"></td>
                 <td>
                     Total:<span data-bind="text:grandTotal"></span>
                 </td>
@@ -181,18 +183,21 @@
     <div class="modal fade" id="finishOrderModal">
         <div class="modal-dialog">
             <div class="modal-content">
-                    <h2>Your order has been completed!</h2>
-                    <div class="modal-footer">
-                        <div class="form-group">
-                            <div class="col-sm-12">
-                                <button type="submit" class="btn btn-success" data-dismiss="modal">Continue Shopping</button>
-                            </div>
+                <div class="modal-body">
+                <h2>Your order has been completed!</h2>
+                </div>
+                <div class="modal-footer">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success" data-dismiss="modal">Continue Shopping</button>
                         </div>
                     </div>
+                </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 </script>
+
 <!-- libraries -->
 <script type="text/javascript" src="js/vendors/jquery.min.js"></script>
 <script type="text/javascript" src="js/vendors/bootstrap.min.js"></script>

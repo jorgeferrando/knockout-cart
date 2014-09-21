@@ -21,47 +21,6 @@ var vm = (function () {
         }
     };
 
-    var addProduct = function (data) {
-        var id = new Date().valueOf();
-        var product = new Product(
-            id,
-            data.name(),
-            data.price(),
-            data.stock()
-        );
-        catalog.push(product);
-        newProduct.clear();
-        $('#addToCatalogModal').modal('hide');
-    };
-
-    var addToCart = function(data) {
-        var item = null;
-        var tmpCart = cart();
-        var n = tmpCart.length;
-
-        while(n--) {
-            if (tmpCart[n].product.id() === data.id()) {
-                item = tmpCart[n];
-            }
-        }
-
-        if (item) {
-            item.addUnit();
-        } else {
-            tmpCart.push(new CartProduct(data,1));
-        }
-
-        cart(tmpCart);
-    };
-
-    var removeFromCart = function (data) {
-        var units = data.units();
-        var stock = data.product.stock();
-
-        data.product.stock(units+stock);
-        cart.remove(data);
-    };
-
     var totalItems = ko.computed(function(){
         var tmpCart = cart();
         var total = 0;
@@ -109,6 +68,47 @@ var vm = (function () {
         });
         return filtered;
     });
+
+    var addProduct = function (data) {
+        var id = new Date().valueOf();
+        var product = new Product(
+            id,
+            data.name(),
+            data.price(),
+            data.stock()
+        );
+        catalog.push(product);
+        newProduct.clear();
+        $('#addToCatalogModal').modal('hide');
+    };
+
+    var addToCart = function(data) {
+        var item = null;
+        var tmpCart = cart();
+        var n = tmpCart.length;
+
+        while(n--) {
+            if (tmpCart[n].product.id() === data.id()) {
+                item = tmpCart[n];
+            }
+        }
+
+        if (item) {
+            item.addUnit();
+        } else {
+            tmpCart.push(new CartProduct(data,1));
+        }
+
+        cart(tmpCart);
+    };
+
+    var removeFromCart = function (data) {
+        var units = data.units();
+        var stock = data.product.stock();
+
+        data.product.stock(units+stock);
+        cart.remove(data);
+    };
 
     var showCartDetails = function () {
         if (cart().length > 0) {
