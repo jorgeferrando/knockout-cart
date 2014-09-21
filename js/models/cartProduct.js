@@ -6,7 +6,7 @@ var CartProduct = function (product, units) {
         _units = ko.observable(units)
     ;
 
-    product.decreaseStock(1);
+    _product.decreaseStock(1);
 
     var subtotal = ko.computed(function(){
         return _product.price() * _units();

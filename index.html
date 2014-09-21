@@ -11,8 +11,8 @@
 <div class="container-fluid">
     <div class="row" id="catalogContainer">
         <div class="col-xs-12" data-bind="template:{name:'header'}"></div>
-        <div class="col-xs-6" data-bind="template:{name:'Catalog'}"></div>
-        <div id="cartContainer" class="col-xs-6 well hidden" data-bind="template:{name:'Cart'}"></div>
+        <div class="col-xs-6" data-bind="template:{name:'catalog'}"></div>
+        <div id="cartContainer" class="col-xs-6 well hidden" data-bind="template:{name:'cart'}"></div>
     </div>
     <div class="row hidden" id="orderContainer" data-bind="template:{name:'order'}">
     </div>
@@ -33,12 +33,7 @@
     </button>
     <hr/>
 </script>
-<script type="text/html" id="menu-item">
-    <li data-bind="css:{active:isActive()}">
-        <a href="#" data-bind="text:name, click:activate"></a>
-    </li>
-</script>
-<script type="text/html" id="Catalog">
+<script type="text/html" id="catalog">
     <div class="input-group">
         <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i> Search</span>
         <input type="text" class="form-control" data-bind="textInput:searchTerm, valueUpdate: 'keyup'">
@@ -78,24 +73,25 @@
     Total Items: <span data-bind="text:totalItems"></span>
     Price: <span data-bind="text:grandTotal"></span>
 </script>
-<script type="text/html" id="Cart">
-    <button type="button" class="close pull-right" data-bind="click:hideCartDetails"><span>&times;</span></button>
-    <h1>Cart</h1>
-    <div data-bind="foreach:cart" class="list-group">
-        <div class="list-group-item" style="overflow: hidden">
-            <button type="button" class="close pull-right" data-bind="click:$root.removeFromCart"><span>&times;</span></button>
-            <h4 class="" data-bind="text:product.name"></h4>
-            <div class="input-group cart-unit">
-                <input type="text" class="form-control" data-bind="textInput:units" readonly/>
+<script type="text/html" id="cart-item">
+    <div class="list-group-item" style="overflow: hidden">
+        <button type="button" class="close pull-right" data-bind="click:$root.removeFromCart"><span>&times;</span></button>
+        <h4 class="" data-bind="text:product.name"></h4>
+        <div class="input-group cart-unit">
+            <input type="text" class="form-control" data-bind="textInput:units" readonly/>
                 <span class="input-group-addon">
                     <div class="btn-group-vertical">
                         <button class="btn btn-default btn-xs" data-bind="click:addUnit"><i class="glyphicon glyphicon-chevron-up"></i></button>
                         <button class="btn btn-default btn-xs" data-bind="click:removeUnit"><i class="glyphicon glyphicon-chevron-down"></i></button>
                     </div>
                 </span>
-            </div>
         </div>
     </div>
+</script>
+<script type="text/html" id="cart">
+    <button type="button" class="close pull-right" data-bind="click:hideCartDetails"><span>&times;</span></button>
+    <h1>Cart</h1>
+    <div data-bind="template: {name: 'cart-item', foreach:cart}" class="list-group"></div>
     <div data-bind="template:{name:'cart-widget'}"></div>
     <button class="btn btn-primary btn-sm" data-bind="click:showOrder">Confirm Order</button>
 </script>
