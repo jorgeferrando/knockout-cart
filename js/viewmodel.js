@@ -3,16 +3,18 @@ var vm = (function () {
 
     var catalog = ko.observableArray([
         new Product(1, "T-Shirt", 10.00, 20),
-        new Product(1, "Trousers", 20.00, 10),
-        new Product(1, "Shirt", 15.00, 20),
-        new Product(1, "Shorts", 5.00, 10)
+        new Product(2, "Trousers", 20.00, 10),
+        new Product(3, "Shirt", 15.00, 20),
+        new Product(4, "Shorts", 5.00, 10)
     ]);
 
+    var cart = ko.observableArray([]);
+
     var newProduct = {
-        name:ko.observable(),
-        price:ko.observable(),
-        stock:ko.observable(),
-        clear: function() {
+        name: ko.observable(),
+        price: ko.observable(),
+        stock: ko.observable(),
+        clear: function () {
             this.name("");
             this.price("");
             this.stock("");
@@ -29,7 +31,54 @@ var vm = (function () {
         );
         catalog.push(product);
         newProduct.clear();
+        $('#addToCatalogModal').modal('hide');
     };
+
+    var addToCart = function(data) {
+        var item = null;
+        var tmpCart = cart();
+        var n = tmpCart.length;
+
+        while(n--) {
+            if (tmpCart[n].product.id() === data.id()) {
+                item = tmpCart[n];
+            }
+        }
+
+        if (item) {
+            item.addUnit();
+        } else {
+            tmpCart.push(new CartProduct(data,1));
+        }
+
+        cart(tmpCart);
+    };
+
+    var removeFromCart = function (data) {
+        var units = data.units();
+        var stock = data.product.stock();
+
+        data.product.stock(units+stock);
+        cart.remove(data);
+    };
+
+    var totalItems = ko.computed(function(){
+        var tmpCart = cart();
+        var total = 0;
+        tmpCart.forEach(function(item){
+            total+=parseInt(item.units(),10);
+        });
+        return total;
+    });
+
+    var grandTotal = ko.computed(function(){
+        var tmpCart = cart();
+        var total = 0;
+        tmpCart.forEach(function(item){
+            total+= (item.units() * item.product.price());
+        });
+        return total;
+    });
 
     var searchTerm = ko.observable("");
 
@@ -61,11 +110,48 @@ var vm = (function () {
         return filtered;
     });
 
+    var showCartDetails = function () {
+        if (cart().length > 0) {
+            $("#cartContainer").removeClass("hidden");
+        }
+    };
+
+    var hideCartDetails = function () {
+        $("#cartContainer").addClass("hidden");
+    };
+
+    var showOrder = function () {
+        $("#catalogContainer").addClass("hidden");
+        $("#orderContainer").removeClass("hidden");
+    };
+
+    var showCatalog = function () {
+        $("#catalogContainer").removeClass("hidden");
+        $("#orderContainer").addClass("hidden");
+    };
+
+    var finishOrder = function() {
+        cart([]);
+        hideCartDetails();
+        showCatalog();
+        $("#finishOrderModal").modal('show');
+    };
+
     return {
         searchTerm: searchTerm,
         catalog: filteredCatalog,
+        cart: cart,
         newProduct: newProduct,
-        addProduct: addProduct
+        totalItems:totalItems,
+        grandTotal:grandTotal,
+        addProduct: addProduct,
+        addToCart: addToCart,
+        removeFromCart:removeFromCart,
+        showCartDetails: showCartDetails,
+        hideCartDetails: hideCartDetails,
+        showOrder: showOrder,
+        showCatalog: showCatalog,
+        finishOrder: finishOrder
     };
 })();
 

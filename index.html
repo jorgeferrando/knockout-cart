@@ -4,65 +4,201 @@
     <title>KO Shopping Cart</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-xs-12">
-            <h1>Catalog</h1>
-            <form class="form-horizontal" role="form" data-bind="with:newProduct">
-                <div class="form-group">
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" placeholder="Name" data-bind="textInput:name">
+    <div class="row" id="catalogContainer">
+        <div class="col-xs-12" data-bind="template:{name:'header'}"></div>
+        <div class="col-xs-6" data-bind="template:{name:'Catalog'}"></div>
+        <div id="cartContainer" class="col-xs-6 well hidden" data-bind="template:{name:'Cart'}"></div>
+    </div>
+    <div class="row hidden" id="orderContainer" data-bind="template:{name:'order'}">
+    </div>
+    <div data-bind="template: {name:'add-to-catalog-modal'}"></div>
+    <div data-bind="template: {name:'finish-order-modal'}"></div>
+</div>
+<!-- templates -->
+<script type="text/html" id="header">
+    <h1>
+        Catalog
+    </h1>
+
+    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addToCatalogModal">
+        Add New Product
+    </button>
+    <button class="btn btn-primary btn-sm" data-bind="click:showCartDetails, css:{disabled:cart().length  < 1}">
+        Show Cart Details
+    </button>
+    <hr/>
+</script>
+<script type="text/html" id="menu-item">
+    <li data-bind="css:{active:isActive()}">
+        <a href="#" data-bind="text:name, click:activate"></a>
+    </li>
+</script>
+<script type="text/html" id="Catalog">
+    <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i> Search</span>
+        <input type="text" class="form-control" data-bind="textInput:searchTerm, valueUpdate: 'keyup'">
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody data-bind="{foreach:catalog}">
+        <tr data-bind="style:{color:stock() < 5?'red':'black'}">
+            <td data-bind="{text:name}"></td>
+            <td data-bind="{text:price}"></td>
+            <td data-bind="{text:stock}"></td>
+            <td>
+                <button class="btn btn-primary" data-bind="click:$parent.addToCart"><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="3">
+                <strong>Items:</strong><span data-bind="{text:catalog().length}"></span>
+            </td>
+            <td colspan="1">
+                <span data-bind="template:{name:'cart-widget'}"></span>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+</script>
+<script type="text/html" id="cart-widget">
+    Total Items: <span data-bind="text:totalItems"></span>
+    Price: <span data-bind="text:grandTotal"></span>
+</script>
+<script type="text/html" id="Cart">
+    <button type="button" class="close pull-right" data-bind="click:hideCartDetails"><span>&times;</span></button>
+    <h1>Cart</h1>
+    <div data-bind="foreach:cart" class="list-group">
+        <div class="list-group-item" style="overflow: hidden">
+            <button type="button" class="close pull-right" data-bind="click:$root.removeFromCart"><span>&times;</span></button>
+            <h4 class="" data-bind="text:product.name"></h4>
+            <div class="input-group cart-unit">
+                <input type="text" class="form-control" data-bind="textInput:units" readonly/>
+                <span class="input-group-addon">
+                    <div class="btn-group-vertical">
+                        <button class="btn btn-default btn-xs" data-bind="click:addUnit"><i class="glyphicon glyphicon-chevron-up"></i></button>
+                        <button class="btn btn-default btn-xs" data-bind="click:removeUnit"><i class="glyphicon glyphicon-chevron-down"></i></button>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-12">
-                        <input type="password" class="form-control" placeholder="Price" data-bind="textInput:price">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-12">
-                        <input type="password" class="form-control" placeholder="Stock" data-bind="textInput:stock">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-12">
-                        <button type="submit" class="btn btn-default" data-bind="{click:$parent.addProduct}"><i class="glyphicon glyphicon-plus-sign"></i> Add Product</button>
-                    </div>
-                </div>
-            </form>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i> Search</span>
-                <input type="text" class="form-control" data-bind="textInput:searchTerm, valueUpdate: 'keyup'">
+                </span>
             </div>
-            <strong>Items:</strong><span data-bind="{text:catalog().length}"></span>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                </tr>
-                </thead>
-                <tbody data-bind="{foreach:catalog}">
-                <tr>
-                    <td data-bind="{text:name}"></td>
-                    <td data-bind="{text:price}"></td>
-                    <td data-bind="{text:stock}"></td>
-                </tr>
-                </tbody>
-            </table>
         </div>
     </div>
-</div>
-
+    <div data-bind="template:{name:'cart-widget'}"></div>
+    <button class="btn btn-primary btn-sm" data-bind="click:showOrder">Confirm Order</button>
+</script>
+<script type="text/html" id="add-to-catalog-modal">
+    <div class="modal fade" id="addToCatalogModal">
+    <div class="modal-dialog">
+    <div class="modal-content">
+    <form class="form-horizontal" role="form" data-bind="with:newProduct">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h3>Add New Produto to the Catalog</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" placeholder="Name" data-bind="textInput:name">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" placeholder="Price" data-bind="textInput:price">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" placeholder="Stock" data-bind="textInput:stock">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button type="submit" class="btn btn-default" data-bind="{click:$parent.addProduct}"><i class="glyphicon glyphicon-plus-sign"></i> Add Product</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</script>
+<script type="text/html" id="order">
+    <div class="col-xs-12">
+        <button class="btn btn-sm btn-primary" data-bind="click:showCatalog">
+            Back to catalog
+        </button>
+        <button class="btn btn-sm btn-primary" data-bind="click:finishOrder">
+            Buy & finish
+        </button>
+    </div>
+    <div class="col-xs-6">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach:cart">
+            <tr>
+                <td data-bind="text:product.name">
+                </td>
+                <td data-bind="text:product.price">
+                </td>
+                <td data-bind="text:units">
+                </td>
+                <td data-bind="text:subtotal">
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td>
+                    Total:<span data-bind="text:grandTotal"></span>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</script>
+<script type="text/html" id="finish-order-modal">
+    <div class="modal fade" id="finishOrderModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                    <h2>Your order has been completed!</h2>
+                    <div class="modal-footer">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <button type="submit" class="btn btn-success" data-dismiss="modal">Continue Shopping</button>
+                            </div>
+                        </div>
+                    </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</script>
 <!-- libraries -->
 <script type="text/javascript" src="js/vendors/jquery.min.js"></script>
 <script type="text/javascript" src="js/vendors/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/vendors/knockout.debug.js"></script>
 <script type="text/javascript" src="js/models/product.js"></script>
+<script type="text/javascript" src="js/models/cartProduct.js"></script>
 <script type="text/javascript" src="js/viewmodel.js"></script>
 </body>
 </html>

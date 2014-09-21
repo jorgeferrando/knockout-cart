@@ -1,0 +1,28 @@
+.container-fluid {
+    margin-top: 20px;
+}
+.row {
+    margin-bottom: 20px;
+}
+.cart-unit {
+    width: 80px;
+}
+.btn-xs {
+    font-size:8px;
+}
+.list-group-item {
+    overflow: hidden;
+}
+.list-group-item h4 {
+    float:left;
+    width: 100px;
+}
+.list-group-item .input-group-addon {
+    padding: 0;
+}
+.btn-group-vertical > .btn-default {
+    border-color: transparent;
+}
+.form-control[disabled], .form-control[readonly] {
+    background-color: transparent !important;
+}
