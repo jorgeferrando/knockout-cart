@@ -9,12 +9,15 @@
 <body>
 
 <div class="container-fluid">
-    <div class="row" id="catalogContainer">
+    <div class="row" data-bind="if: visibleCatalog">
         <div class="col-xs-12" data-bind="template:{name:'header'}"></div>
         <div class="col-xs-6" data-bind="template:{name:'catalog'}"></div>
-        <div id="cartContainer" class="col-xs-6 well hidden" data-bind="template:{name:'cart'}"></div>
+        <div class="col-xs-6" data-bind="if: visibleCart">
+            <div class="well" data-bind="template:{name:'cart'}"></div>
+        </div>
     </div>
-    <div class="row hidden" id="orderContainer" data-bind="template:{name:'order'}">
+    <div class="row" data-bind="if: visibleOrder">
+        <div data-bind="template:{name:'order'}"></div>
     </div>
     <div data-bind="template: {name:'add-to-catalog-modal'}"></div>
     <div data-bind="template: {name:'finish-order-modal'}"></div>
