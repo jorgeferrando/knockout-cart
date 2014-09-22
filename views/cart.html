@@ -1,7 +1,6 @@
-<script type="text/html" id="cart">
+
     <button type="button" class="close pull-right" data-bind="click:hideCartDetails"><span>&times;</span></button>
     <h1>Cart</h1>
     <div data-bind="template: {name: 'cart-item', foreach:cart}" class="list-group"></div>
     <div data-bind="template:{name:'cart-widget'}"></div>
     <button class="btn btn-primary btn-sm" data-bind="click:showOrder">Confirm Order</button>
-</script>

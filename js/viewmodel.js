@@ -161,25 +161,8 @@ var vm = (function () {
     };
 })();
 
-var templates = [
-    'header',
-    'catalog',
-    'cart',
-    'cart-item',
-    'cart-widget',
-    'order',
-    'add-to-catalog-modal',
-    'finish-order-modal'
-];
+//ko External Template Settings
+infuser.defaults.templateSuffix = ".html";
+infuser.defaults.templateUrl = "views";
 
-var busy = templates.length;
-templates.forEach(function(tpl){
-    "use strict";
-    $.get('views/'+ tpl + '.html').then(function(data){
-        $('body').append(data);
-        busy--;
-        if (!busy) {
-            ko.applyBindings(vm);
-        }
-    });
-});
+ko.applyBindings(vm);
