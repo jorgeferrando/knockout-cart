@@ -1,0 +1,13 @@
+<script type="text/html" id="header">
+    <h1>
+        Catalog
+    </h1>
+
+    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addToCatalogModal">
+        Add New Product
+    </button>
+    <button class="btn btn-primary btn-sm" data-bind="click:showCartDetails, css:{disabled:cart().length  < 1}">
+        Show Cart Details
+    </button>
+    <hr/>
+</script>

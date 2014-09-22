@@ -6,8 +6,6 @@ var CartProduct = function (product, units) {
         _units = ko.observable(units)
     ;
 
-    _product.decreaseStock(1);
-
     var subtotal = ko.computed(function(){
         return _product.price() * _units();
     });
@@ -37,6 +35,6 @@ var CartProduct = function (product, units) {
         units: _units,
         subtotal: subtotal,
         addUnit : addUnit,
-        removeUnit: removeUnit,
+        removeUnit: removeUnit
     };
 };

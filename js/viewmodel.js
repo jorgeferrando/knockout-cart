@@ -5,8 +5,6 @@ var vm = (function () {
 
     var visibleCart = ko.observable(false);
 
-    var visibleOrder = ko.observable(false);
-
     var catalog = ko.observableArray([
         new Product(1, "T-Shirt", 10.00, 20),
         new Product(2, "Trousers", 20.00, 10),
@@ -102,7 +100,9 @@ var vm = (function () {
         if (item) {
             item.addUnit();
         } else {
-            tmpCart.push(new CartProduct(data,1));
+            item = new CartProduct(data,1);
+            tmpCart.push(item);
+            item.product.decreaseStock(1);
         }
 
         cart(tmpCart);
@@ -128,12 +128,10 @@ var vm = (function () {
 
     var showOrder = function () {
         visibleCatalog(false);
-        visibleOrder(true);
     };
 
     var showCatalog = function () {
         visibleCatalog(true);
-        visibleOrder(false);
     };
 
     var finishOrder = function() {
@@ -155,7 +153,6 @@ var vm = (function () {
         removeFromCart:removeFromCart,
         visibleCatalog: visibleCatalog,
         visibleCart: visibleCart,
-        visibleOrder: visibleOrder,
         showCartDetails: showCartDetails,
         hideCartDetails: hideCartDetails,
         showOrder: showOrder,
@@ -164,4 +161,25 @@ var vm = (function () {
     };
 })();
 
-ko.applyBindings(vm);
+var templates = [
+    'header',
+    'catalog',
+    'cart',
+    'cart-item',
+    'cart-widget',
+    'order',
+    'add-to-catalog-modal',
+    'finish-order-modal'
+];
+
+var busy = templates.length;
+templates.forEach(function(tpl){
+    "use strict";
+    $.get('views/'+ tpl + '.html').then(function(data){
+        $('body').append(data);
+        busy--;
+        if (!busy) {
+            ko.applyBindings(vm);
+        }
+    });
+});

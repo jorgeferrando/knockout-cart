@@ -1,0 +1,42 @@
+<script type="text/html" id="order">
+    <div class="col-xs-12">
+        <button class="btn btn-sm btn-primary" data-bind="click:showCatalog">
+            Back to catalog
+        </button>
+        <button class="btn btn-sm btn-primary" data-bind="click:finishOrder">
+            Buy & finish
+        </button>
+    </div>
+    <div class="col-xs-6">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Units</th>
+                <th>Subtotal</th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach:cart">
+            <tr>
+                <td data-bind="text:product.name">
+                </td>
+                <td data-bind="text:product.price">
+                </td>
+                <td data-bind="text:units">
+                </td>
+                <td data-bind="text:subtotal">
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="3"></td>
+                <td>
+                    Total:<span data-bind="text:grandTotal"></span>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</script>
