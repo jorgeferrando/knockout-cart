@@ -116,6 +116,8 @@ var vm = (function () {
         cart.remove(data);
     };
 
+    var showSearchBar = ko.observable(true);
+
     var showCartDetails = function () {
         if (cart().length > 0) {
             visibleCart(true);
@@ -153,6 +155,7 @@ var vm = (function () {
         removeFromCart:removeFromCart,
         visibleCatalog: visibleCatalog,
         visibleCart: visibleCart,
+        showSearchBar: showSearchBar,
         showCartDetails: showCartDetails,
         hideCartDetails: hideCartDetails,
         showOrder: showOrder,

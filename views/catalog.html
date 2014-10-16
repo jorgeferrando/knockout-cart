@@ -1,5 +1,5 @@
 
-    <div class="input-group">
+    <div class="input-group" data-bind="visible:showSearchBar">
         <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i> Search</span>
         <input type="text" class="form-control" data-bind="textInput:searchTerm, valueUpdate: 'keyup'">
     </div>
@@ -15,10 +15,10 @@
         <tbody data-bind="{foreach:catalog}">
         <tr data-bind="style:{color:stock() < 5?'red':'black'}">
             <td data-bind="{text:name}"></td>
-            <td data-bind="{text:price}"></td>
+            <td data-bind="{currency:price, symbol:''}"></td>
             <td data-bind="{text:stock}"></td>
             <td>
-                <button class="btn btn-primary" data-bind="click:$parent.addToCart"><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+                <add-to-cart-button params="{cart: $parent.cart, item: $data}"></add-to-cart-button>
             </td>
         </tr>
         </tbody>
