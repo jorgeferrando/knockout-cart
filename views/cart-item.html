@@ -4,11 +4,18 @@
         <h4 class="" data-bind="text:product.name"></h4>
         <div class="input-group cart-unit">
             <input type="text" class="form-control" data-bind="textInput:units" readonly/>
-                <span class="input-group-addon">
-                    <div class="btn-group-vertical">
-                        <button class="btn btn-default btn-xs" data-bind="click:addUnit"><i class="glyphicon glyphicon-chevron-up"></i></button>
-                        <button class="btn btn-default btn-xs" data-bind="click:removeUnit"><i class="glyphicon glyphicon-chevron-down"></i></button>
-                    </div>
-                </span>
+            <span class="input-group-addon">
+                <div class="btn-group-vertical">
+                    <button class="btn btn-default btn-xs add-unit"><i class="glyphicon glyphicon-chevron-up"></i></button>
+                    <button class="btn btn-default btn-xs remove-unit"><i class="glyphicon glyphicon-chevron-down"></i></button>
+                </div>
+            </span>
         </div>
     </div>
+
+<button data-bind="click:addDraggable">
+    Add draggable element
+</button>
+<ul data-bind="foreach:elements">
+    <li data-bind="draggable:isDraggable,text:name"></li>
+</ul>

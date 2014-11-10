@@ -1,5 +1,14 @@
 var vm = (function () {
     "use strict";
+    var debug = ko.observable(false);
+
+    var showDebug = function () {
+        debug(true);
+    };
+
+    var hideDebug = function () {
+        debug(false);
+    };
 
     var visibleCatalog = ko.observable(true);
 
@@ -45,6 +54,33 @@ var vm = (function () {
 
     var searchTerm = ko.observable("");
 
+    var filterCatalog = function () {
+        if (!catalog()) {
+            filteredCatalog([]);
+        }
+        if (!filter) {
+            filteredCatalog(catalog());
+        }
+        var filter = searchTerm().toLowerCase();
+        //filter data
+        var filtered = ko.utils.arrayFilter(catalog(), function (item) {
+            var fields = ["name"]; //we can filter several properties
+            var i = fields.length;
+            while (i--) {
+                var prop = fields[i];
+                if (item.hasOwnProperty(prop) && ko.isObservable(item[prop])) {
+                    var strProp = ko.utils.unwrapObservable(item[prop]).toLocaleLowerCase();
+                    if (item[prop]() && (strProp.indexOf(filter) !== -1)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+        filteredCatalog(filtered);
+    };
+
+    /*
     var filteredCatalog = ko.computed(function () {
         //if catalog is empty return empty array
         if (!catalog()) {
@@ -71,7 +107,8 @@ var vm = (function () {
             return false;
         });
         return filtered;
-    });
+    });*/
+    var filteredCatalog = ko.observableArray(catalog());
 
     var addProduct = function (data) {
         var id = new Date().valueOf();
@@ -143,9 +180,15 @@ var vm = (function () {
         $("#finishOrderModal").modal('show');
     };
 
+
+
     return {
+        debug: debug,
+        showDebug:showDebug,
+        hideDebug:hideDebug,
         searchTerm: searchTerm,
         catalog: filteredCatalog,
+        filterCatalog:filterCatalog,
         cart: cart,
         newProduct: newProduct,
         totalItems:totalItems,
