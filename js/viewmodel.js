@@ -1,5 +1,8 @@
 var vm = (function () {
     "use strict";
+
+    var dataContext = new ProductService();
+
     var debug = ko.observable(false);
 
     var showDebug = function () {
@@ -15,10 +18,10 @@ var vm = (function () {
     var visibleCart = ko.observable(false);
 
     var catalog = ko.observableArray([
-        new Product(1, "T-Shirt", 10.00, 20),
-        new Product(2, "Trousers", 20.00, 10),
-        new Product(3, "Shirt", 15.00, 20),
-        new Product(4, "Shorts", 5.00, 10)
+        //new Product(1, "T-Shirt", 10.00, 20),
+        //new Product(2, "Trousers", 20.00, 10),
+        //new Product(3, "Shirt", 15.00, 20),
+        //new Product(4, "Shorts", 5.00, 10)
     ]);
 
     var cart = ko.observableArray([]);
@@ -80,34 +83,6 @@ var vm = (function () {
         filteredCatalog(filtered);
     };
 
-    /*
-    var filteredCatalog = ko.computed(function () {
-        //if catalog is empty return empty array
-        if (!catalog()) {
-            return [];
-        }
-        var filter = searchTerm().toLowerCase();
-        //if filter is empty return all the catalog
-        if (!filter) {
-            return catalog();
-        }
-        //filter data
-        var filtered = ko.utils.arrayFilter(catalog(), function (item) {
-            var fields = ["name"]; //we can filter several properties
-            var i = fields.length;
-            while (i--) {
-                var prop = fields[i];
-                if (item.hasOwnProperty(prop) && ko.isObservable(item[prop])) {
-                    var strProp = ko.utils.unwrapObservable(item[prop]).toLocaleLowerCase();
-                    if (item[prop]() && (strProp.indexOf(filter) !== -1)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        });
-        return filtered;
-    });*/
     var filteredCatalog = ko.observableArray(catalog());
 
     var addProduct = function (data) {
@@ -118,9 +93,14 @@ var vm = (function () {
             data.price(),
             data.stock()
         );
-        catalog.push(product);
-        newProduct.clear();
-        $('#addToCatalogModal').modal('hide');
+
+        dataContext.save(product.toObj())
+            .done(function (response){
+                catalog.push(product);
+                filteredCatalog(catalog());
+                newProduct.clear();
+                $('#addToCatalogModal').modal('hide');
+            });
     };
 
     var addToCart = function(data) {
@@ -174,12 +154,34 @@ var vm = (function () {
     };
 
     var finishOrder = function() {
-        cart([]);
-        hideCartDetails();
-        showCatalog();
-        $("#finishOrderModal").modal('show');
+        dataContext.saveCart()
+            .done(function(response){
+                cart([]);
+                hideCartDetails();
+                showCatalog();
+                $("#finishOrderModal").modal('show');
+            });
+
     };
 
+    var showDescription = function (data) {
+        dataContext.get(data.id())
+            .done(function(response){
+                alert(response.data.description);
+            });
+    };
+
+    var activate = function () {
+        dataContext.all()
+            .done(function(response){
+                catalog([]);
+                response.data.forEach(function(item){
+                    catalog.push(new Product(item.id,item.name,item.price,item.stock));
+                });
+                filteredCatalog(catalog());
+                ko.applyBindings(vm);
+            });
+    };
 
 
     return {
@@ -203,7 +205,9 @@ var vm = (function () {
         hideCartDetails: hideCartDetails,
         showOrder: showOrder,
         showCatalog: showCatalog,
-        finishOrder: finishOrder
+        finishOrder: finishOrder,
+        activate: activate,
+        showDescription: showDescription
     };
 })();
 
@@ -211,4 +215,4 @@ var vm = (function () {
 infuser.defaults.templateSuffix = ".html";
 infuser.defaults.templateUrl = "views";
 
-ko.applyBindings(vm);
+vm.activate();

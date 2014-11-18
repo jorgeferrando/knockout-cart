@@ -20,12 +20,22 @@ var Product = function (id,name,price,stock) {
         _stock(s);
     };
 
+    var toObj = function () {
+        return {
+            id: _id(),
+            name: _name(),
+            price: _price(),
+            stock: _stock()
+        };
+    }
+
     return {
         id:_id,
         name:_name,
         price:_price,
         stock:_stock,
         hasStock: hasStock,
-        decreaseStock:decreaseStock
+        decreaseStock:decreaseStock,
+        toObj: toObj
     };
 };

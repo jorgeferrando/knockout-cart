@@ -1,19 +1,35 @@
-$(function (ko){
-    "use strict";
-    function ProductService(options) {
-        function all() {
-
-        }
-        function get(id) {
-
-        }
-        function save() {
-
-        }
-        return {
-            all:all,
-            get:get,
-            save: save
-        };
+"use strict";
+function ProductService() {
+    function all() {
+        return $.ajax({
+            type: 'GET',
+            url: '/products'
+        });
     }
-})(ko);
+    function get(id) {
+        return $.ajax({
+            type: 'GET',
+            url: '/products/'+id
+        });
+    }
+    function save(product) {
+        return $.ajax({
+            type: 'POST',
+            url: '/products',
+            data: product
+        });
+    }
+    function saveCart(cart) {
+        return $.ajax({
+            type: 'PUT',
+            url: '/cart',
+            data: cart
+        });
+    }
+    return {
+        all:all,
+        get: get,
+        save: save,
+        saveCart: saveCart
+    };
+}

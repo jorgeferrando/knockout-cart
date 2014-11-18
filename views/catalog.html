@@ -14,7 +14,7 @@
         </thead>
         <tbody data-bind="{foreach:catalog}">
         <tr data-bind="style:{color:stock() < 5?'red':'black'}">
-            <td data-bind="{text:name}"></td>
+            <td><a href data-bind="click:$parent.showDescription, text:name"></a></td>
             <td data-bind="{currency:price, symbol:''}"></td>
             <td data-bind="{text:stock}"></td>
             <td>

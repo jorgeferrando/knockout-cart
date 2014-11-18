@@ -1,235 +1,692 @@
+/*!
+ * MockJax - jQuery Plugin to Mock Ajax requests
+ *
+ * Version:  1.6.1
+ * Released:
+ * Home:   https://github.com/jakerella/jquery-mockjax
+ * Author:   Jonathan Sharp (http://jdsharp.com)
+ * License:  MIT,GPL
+ *
+ * Copyright (c) 2014 appendTo, Jordan Kasper
+ * NOTE: This repository was taken over by Jordan Kasper (@jakerella) October, 2014
+ * 
+ * Dual licensed under the MIT or GPL licenses.
+ * http://opensource.org/licenses/MIT OR http://www.gnu.org/licenses/gpl-2.0.html
+ */
 (function($) {
+    var _ajax = $.ajax,
+        mockHandlers = [],
+        mockedAjaxCalls = [],
+        unmockedAjaxCalls = [],
+        CALLBACK_REGEX = /=\?(&|$)/,
+        jsc = (new Date()).getTime();
 
-    var _mocked = [];
-    $.mockJSON = function(request, template) {
-        for (var i = 0; i < _mocked.length; i++) {
-            var mock = _mocked[i];
-            if (mock.request.toString() == request.toString()) {
-                _mocked.splice(i, 1);
-                break;
-            }
+
+    // Parse the given XML string.
+    function parseXML(xml) {
+        if ( window.DOMParser == undefined && window.ActiveXObject ) {
+            DOMParser = function() { };
+            DOMParser.prototype.parseFromString = function( xmlString ) {
+                var doc = new ActiveXObject('Microsoft.XMLDOM');
+                doc.async = 'false';
+                doc.loadXML( xmlString );
+                return doc;
+            };
         }
 
-        _mocked.push({
-            request:request,
-            template:template
+        try {
+            var xmlDoc = ( new DOMParser() ).parseFromString( xml, 'text/xml' );
+            if ( $.isXMLDoc( xmlDoc ) ) {
+                var err = $('parsererror', xmlDoc);
+                if ( err.length == 1 ) {
+                    throw new Error('Error: ' + $(xmlDoc).text() );
+                }
+            } else {
+                throw new Error('Unable to parse XML');
+            }
+            return xmlDoc;
+        } catch( e ) {
+            var msg = ( e.name == undefined ? e : e.name + ': ' + e.message );
+            $(document).trigger('xmlParseError', [ msg ]);
+            return undefined;
+        }
+    }
+
+    // Check if the data field on the mock handler and the request match. This
+    // can be used to restrict a mock handler to being used only when a certain
+    // set of data is passed to it.
+    function isMockDataEqual( mock, live ) {
+        var identical = true;
+        // Test for situations where the data is a querystring (not an object)
+        if (typeof live === 'string') {
+            // Querystring may be a regex
+            return $.isFunction( mock.test ) ? mock.test(live) : mock == live;
+        }
+        $.each(mock, function(k) {
+            if ( live[k] === undefined ) {
+                identical = false;
+                return identical;
+            } else {
+                if ( typeof live[k] === 'object' && live[k] !== null ) {
+                    if ( identical && $.isArray( live[k] ) ) {
+                        identical = $.isArray( mock[k] ) && live[k].length === mock[k].length;
+                    }
+                    identical = identical && isMockDataEqual(mock[k], live[k]);
+                } else {
+                    if ( mock[k] && $.isFunction( mock[k].test ) ) {
+                        identical = identical && mock[k].test(live[k]);
+                    } else {
+                        identical = identical && ( mock[k] == live[k] );
+                    }
+                }
+            }
         });
 
-        return $;
-    };
+        return identical;
+    }
 
-    $.mockJSON.random = true;
+    // See if a mock handler property matches the default settings
+    function isDefaultSetting(handler, property) {
+        return handler[property] === $.mockjaxSettings[property];
+    }
 
+    // Check the given handler should mock the given request
+    function getMockForRequest( handler, requestSettings ) {
+        // If the mock was registered with a function, let the function decide if we
+        // want to mock this request
+        if ( $.isFunction(handler) ) {
+            return handler( requestSettings );
+        }
 
-    var _original_ajax = $.ajax;
-    $.ajax = function(options) {
-        if (options.dataType === 'json') {
-            for (var i = 0; i < _mocked.length; i++) {
-                var mock = _mocked[i];
-                if (mock.request.test(options.url)) {
-                    options.success($.mockJSON.generateFromTemplate(mock.template));
-                    return $;
-                }
+        // Inspect the URL of the request and check if the mock handler's url
+        // matches the url for this ajax request
+        if ( $.isFunction(handler.url.test) ) {
+            // The user provided a regex for the url, test it
+            if ( !handler.url.test( requestSettings.url ) ) {
+                return null;
             }
-        }
-
-        return _original_ajax.apply(this, arguments);
-    }
-
-
-    $.mockJSON.generateFromTemplate = function(template, name) {
-        var length = 0;
-        var matches = (name || '').match(/\w+\|(\d+)-(\d+)/);
-        if (matches) {
-            var length_min = parseInt(matches[1], 10);
-            var length_max = parseInt(matches[2], 10);
-            length = Math.round(rand() * (length_max - length_min)) + length_min;
-        }
-
-        var generated = null;
-        switch (type(template)) {
-            case 'array':
-                generated = [];
-                for (var i = 0; i < length; i++) {
-                    generated[i] = $.mockJSON.generateFromTemplate(template[0]);
-                }
-                break;
-
-            case 'object':
-                generated = {};
-                for (var p in template) {
-                    generated[p.replace(/\|(\d+-\d+|\+\d+)/, '')] = $.mockJSON.generateFromTemplate(template[p], p);
-                    var inc_matches = p.match(/\w+\|\+(\d+)/);
-                    if (inc_matches && type(template[p]) == 'number') {
-                        var increment = parseInt(inc_matches[1], 10);
-                        template[p] += increment;
-                    }
-                }
-                break;
-
-            case 'number':
-                generated = (matches)
-                    ? length
-                    : template;
-                break;
-
-            case 'boolean':
-                generated = (matches)
-                    ? rand() >= 0.5
-                    : template;
-                break;
-
-            case 'string':
-                if (template.length) {
-                    generated = '';
-                    length = length || 1;
-                    for (var i = 0; i < length; i++) {
-                        generated += template;
-                    }
-                    var keys = generated.match(/@([A-Z_0-9\(\),]+)/g) || [];
-                    for (var i = 0; i < keys.length; i++) {
-                        var key = keys[i];
-                        var randomData = getRandomData(key);
-                        generated = generated.replace(key, randomData);
-                        if (type(randomData) == 'number')
-                            generated = Number(generated);
-                    }
-                } else {
-                    generated = ""
-                    for (var i = 0; i < length; i++) {
-                        generated += String.fromCharCode(Math.floor(rand() * 255));
-                    }
-                }
-                break
-
-            default:
-                generated = template;
-                break;
-        }
-        return generated;
-
-    }
-
-
-    function getRandomData(key) {
-        key = key.substr(1); // remove "@"
-
-        //var params = key.match(/\(((\d+),?)+\)/g) || [];
-        var params = key.match(/\(([^\)]+)\)/g) || [];
-
-        if (!(key in $.mockJSON.data)) {
-            console.log(key);
-            console.log(params);
-            return key;
-        }
-
-        var a = $.mockJSON.data[key];
-
-        switch (type(a)) {
-            case 'array':
-                var index = Math.floor(a.length * rand());
-                return a[index];
-
-            case 'function':
-                return a();
-        }
-    }
-
-
-    function type(obj) {
-        return $.isArray(obj)
-            ? 'array'
-            : (obj === null)
-            ? 'null'
-            : typeof obj;
-    }
-
-
-    function pad(num) {
-        if (num < 10) {
-            return '0' + num;
-        }
-        return num + '';
-    }
-
-    var _random_numbers = [0.021768910889510606,0.23762323165420307,0.9079616118204306,0.6534305309997466,0.22049697572443694,0.07687466163364898,0.8017428775547905,0.16165353264404825,0.5124345671670483,0.19337327636624613,0.39963994200698416,0.8012592654139514,0.22474962687229938,0.9791396234452399,0.7965428353317756,0.9777664340629622,0.5135216702983731,0.7407128236192145,0.12880984991420075,0.8186600800491484,0.5187691445438851,0.034723021925916586,0.5625092833040853,0.02502838571997701,0.663696305503698,0.3481608684353138,0.8991623585175106,0.3640542564277087,0.8320766874121723,0.012778915627689846,0.1427680370061336,0.9774408289203956,0.010229381207667587,0.2596610885223093,0.6150540104297127,0.7130773919030915,0.8638338302974085,0.6178483032907357,0.980312844391733,0.5007277415012348,0.6348672031113127,0.4400097775503303,0.8468458451408212,0.38724997893647317,0.690237920987028,0.19850102297146477,0.44895115941315766,0.22283381913760725,0.031228117310125314,0.3367510872581615,0.28155752394210787,0.14696694832580504,0.08164635161760991,0.8837733477785624,0.4590179148539142,0.9613195413217465,0.11263127577456922,0.743695635896287,0.0002424891439143373,0.1964622832546613,0.7333363138878922,0.5575568682003356,0.20426374168098604,0.18030934250338893,0.9792636408392759,0.30121911048336913,0.7734906886720265,0.6984051127767527,0.6638058511379343,0.3310956256388182,0.36632372827973203,0.8996494702333895,0.8235917663049763,0.418496734118911,0.8164648495097332,0.9457831606354686,0.2845227542117049,0.42374718399151545,0.3431728911657228,0.5289314006219973,0.6029243600407113,0.6528301140700757,0.6948768236197832,0.7887302784092911,0.8950274196119906,0.6121642239166305,0.31797481561514696,0.34903732589844216,0.3580320092281766,0.8312225728434115,0.32331010157206974,0.16395388672837796,0.6072960306003872,0.6580526967999424,0.23472961545632742,0.6138637855489343,0.3067303339060682,0.44935935129958315,0.24729465243280668,0.8244189715967711];
-    function rand() {
-        if ($.mockJSON.random) {
-            return Math.random();
         } else {
-            _random_numbers = _random_numbers.concat(_random_numbers.splice(0,1));
-            return _random_numbers[0];
+            // Look for a simple wildcard '*' or a direct URL match
+            var star = handler.url.indexOf('*');
+            if (handler.url !== requestSettings.url && star === -1 ||
+                !new RegExp(handler.url.replace(/[-[\]{}()+?.,\\^$|#\s]/g, "\\$&").replace(/\*/g, '.+')).test(requestSettings.url)) {
+                return null;
+            }
+        }
+
+        // Inspect the data submitted in the request (either POST body or GET query string)
+        if ( handler.data ) {
+            if ( ! requestSettings.data || !isMockDataEqual(handler.data, requestSettings.data) ) {
+                // They're not identical, do not mock this request
+                return null;
+            }
+        }
+        // Inspect the request type
+        if ( handler && handler.type &&
+            handler.type.toLowerCase() != requestSettings.type.toLowerCase() ) {
+            // The request type doesn't match (GET vs. POST)
+            return null;
+        }
+
+        return handler;
+    }
+
+    function parseResponseTimeOpt(responseTime) {
+        if ($.isArray(responseTime)) {
+            var min = responseTime[0];
+            var max = responseTime[1];
+            return (typeof min === 'number' && typeof max === 'number') ? Math.floor(Math.random() * (max - min)) + min : null;
+        } else {
+            return (typeof responseTime === 'number') ? responseTime: null;
+        }
+    }
+
+    // Process the xhr objects send operation
+    function _xhrSend(mockHandler, requestSettings, origSettings) {
+
+        // This is a substitute for < 1.4 which lacks $.proxy
+        var process = (function(that) {
+            return function() {
+                return (function() {
+                    // The request has returned
+                    this.status     = mockHandler.status;
+                    this.statusText = mockHandler.statusText;
+                    this.readyState	= 1;
+
+                    var finishRequest = function () {
+                        this.readyState	= 4;
+
+                        var onReady;
+                        // Copy over our mock to our xhr object before passing control back to
+                        // jQuery's onreadystatechange callback
+                        if ( requestSettings.dataType == 'json' && ( typeof mockHandler.responseText == 'object' ) ) {
+                            this.responseText = JSON.stringify(mockHandler.responseText);
+                        } else if ( requestSettings.dataType == 'xml' ) {
+                            if ( typeof mockHandler.responseXML == 'string' ) {
+                                this.responseXML = parseXML(mockHandler.responseXML);
+                                //in jQuery 1.9.1+, responseXML is processed differently and relies on responseText
+                                this.responseText = mockHandler.responseXML;
+                            } else {
+                                this.responseXML = mockHandler.responseXML;
+                            }
+                        } else if (typeof mockHandler.responseText === 'object' && mockHandler.responseText !== null) {
+                            // since jQuery 1.9 responseText type has to match contentType
+                            mockHandler.contentType = 'application/json';
+                            this.responseText = JSON.stringify(mockHandler.responseText);
+                        } else {
+                            this.responseText = mockHandler.responseText;
+                        }
+                        if( typeof mockHandler.status == 'number' || typeof mockHandler.status == 'string' ) {
+                            this.status = mockHandler.status;
+                        }
+                        if( typeof mockHandler.statusText === "string") {
+                            this.statusText = mockHandler.statusText;
+                        }
+                        // jQuery 2.0 renamed onreadystatechange to onload
+                        onReady = this.onreadystatechange || this.onload;
+
+                        // jQuery < 1.4 doesn't have onreadystate change for xhr
+                        if ( $.isFunction( onReady ) ) {
+                            if( mockHandler.isTimeout) {
+                                this.status = -1;
+                            }
+                            onReady.call( this, mockHandler.isTimeout ? 'timeout' : undefined );
+                        } else if ( mockHandler.isTimeout ) {
+                            // Fix for 1.3.2 timeout to keep success from firing.
+                            this.status = -1;
+                        }
+                    };
+
+                    // We have an executable function, call it to give
+                    // the mock handler a chance to update it's data
+                    if ( $.isFunction(mockHandler.response) ) {
+                        // Wait for it to finish
+                        if ( mockHandler.response.length === 2 ) {
+                            mockHandler.response(origSettings, function () {
+                                finishRequest.call(that);
+                            });
+                            return;
+                        } else {
+                            mockHandler.response(origSettings);
+                        }
+                    }
+
+                    finishRequest.call(that);
+                }).apply(that);
+            };
+        })(this);
+
+        if ( mockHandler.proxy ) {
+            // We're proxying this request and loading in an external file instead
+            _ajax({
+                global: false,
+                url: mockHandler.proxy,
+                type: mockHandler.proxyType,
+                data: mockHandler.data,
+                dataType: requestSettings.dataType === "script" ? "text/plain" : requestSettings.dataType,
+                complete: function(xhr) {
+                    mockHandler.responseXML = xhr.responseXML;
+                    mockHandler.responseText = xhr.responseText;
+                    // Don't override the handler status/statusText if it's specified by the config
+                    if (isDefaultSetting(mockHandler, 'status')) {
+                        mockHandler.status = xhr.status;
+                    }
+                    if (isDefaultSetting(mockHandler, 'statusText')) {
+                        mockHandler.statusText = xhr.statusText;
+                    }
+                    this.responseTimer = setTimeout(process, parseResponseTimeOpt(mockHandler.responseTime) || 0);
+                }
+            });
+        } else {
+            // type == 'POST' || 'GET' || 'DELETE'
+            if ( requestSettings.async === false ) {
+                // TODO: Blocking delay
+                process();
+            } else {
+                this.responseTimer = setTimeout(process, parseResponseTimeOpt(mockHandler.responseTime) || 50);
+            }
+        }
+    }
+
+    // Construct a mocked XHR Object
+    function xhr(mockHandler, requestSettings, origSettings, origHandler) {
+        // Extend with our default mockjax settings
+        mockHandler = $.extend(true, {}, $.mockjaxSettings, mockHandler);
+
+        if (typeof mockHandler.headers === 'undefined') {
+            mockHandler.headers = {};
+        }
+        if (typeof requestSettings.headers === 'undefined') {
+            requestSettings.headers = {};
+        }
+        if ( mockHandler.contentType ) {
+            mockHandler.headers['content-type'] = mockHandler.contentType;
+        }
+
+        return {
+            status: mockHandler.status,
+            statusText: mockHandler.statusText,
+            readyState: 1,
+            open: function() { },
+            send: function() {
+                origHandler.fired = true;
+                _xhrSend.call(this, mockHandler, requestSettings, origSettings);
+            },
+            abort: function() {
+                clearTimeout(this.responseTimer);
+            },
+            setRequestHeader: function(header, value) {
+                requestSettings.headers[header] = value;
+            },
+            getResponseHeader: function(header) {
+                // 'Last-modified', 'Etag', 'content-type' are all checked by jQuery
+                if ( mockHandler.headers && mockHandler.headers[header] ) {
+                    // Return arbitrary headers
+                    return mockHandler.headers[header];
+                } else if ( header.toLowerCase() == 'last-modified' ) {
+                    return mockHandler.lastModified || (new Date()).toString();
+                } else if ( header.toLowerCase() == 'etag' ) {
+                    return mockHandler.etag || '';
+                } else if ( header.toLowerCase() == 'content-type' ) {
+                    return mockHandler.contentType || 'text/plain';
+                }
+            },
+            getAllResponseHeaders: function() {
+                var headers = '';
+                // since jQuery 1.9 responseText type has to match contentType
+                if (mockHandler.contentType) {
+                    mockHandler.headers['Content-Type'] = mockHandler.contentType;
+                }
+                $.each(mockHandler.headers, function(k, v) {
+                    headers += k + ': ' + v + "\n";
+                });
+                return headers;
+            }
+        };
+    }
+
+    // Process a JSONP mock request.
+    function processJsonpMock( requestSettings, mockHandler, origSettings ) {
+        // Handle JSONP Parameter Callbacks, we need to replicate some of the jQuery core here
+        // because there isn't an easy hook for the cross domain script tag of jsonp
+
+        processJsonpUrl( requestSettings );
+
+        requestSettings.dataType = "json";
+        if(requestSettings.data && CALLBACK_REGEX.test(requestSettings.data) || CALLBACK_REGEX.test(requestSettings.url)) {
+            createJsonpCallback(requestSettings, mockHandler, origSettings);
+
+            // We need to make sure
+            // that a JSONP style response is executed properly
+
+            var rurl = /^(\w+:)?\/\/([^\/?#]+)/,
+                parts = rurl.exec( requestSettings.url ),
+                remote = parts && (parts[1] && parts[1] !== location.protocol || parts[2] !== location.host);
+
+            requestSettings.dataType = "script";
+            if(requestSettings.type.toUpperCase() === "GET" && remote ) {
+                var newMockReturn = processJsonpRequest( requestSettings, mockHandler, origSettings );
+
+                // Check if we are supposed to return a Deferred back to the mock call, or just
+                // signal success
+                if(newMockReturn) {
+                    return newMockReturn;
+                } else {
+                    return true;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Append the required callback parameter to the end of the request URL, for a JSONP request
+    function processJsonpUrl( requestSettings ) {
+        if ( requestSettings.type.toUpperCase() === "GET" ) {
+            if ( !CALLBACK_REGEX.test( requestSettings.url ) ) {
+                requestSettings.url += (/\?/.test( requestSettings.url ) ? "&" : "?") +
+                (requestSettings.jsonp || "callback") + "=?";
+            }
+        } else if ( !requestSettings.data || !CALLBACK_REGEX.test(requestSettings.data) ) {
+            requestSettings.data = (requestSettings.data ? requestSettings.data + "&" : "") + (requestSettings.jsonp || "callback") + "=?";
+        }
+    }
+
+    // Process a JSONP request by evaluating the mocked response text
+    function processJsonpRequest( requestSettings, mockHandler, origSettings ) {
+        // Synthesize the mock request for adding a script tag
+        var callbackContext = origSettings && origSettings.context || requestSettings,
+            newMock = null;
+
+
+        // If the response handler on the moock is a function, call it
+        if ( mockHandler.response && $.isFunction(mockHandler.response) ) {
+            mockHandler.response(origSettings);
+        } else {
+
+            // Evaluate the responseText javascript in a global context
+            if( typeof mockHandler.responseText === 'object' ) {
+                $.globalEval( '(' + JSON.stringify( mockHandler.responseText ) + ')');
+            } else {
+                $.globalEval( '(' + mockHandler.responseText + ')');
+            }
+        }
+
+        // Successful response
+        setTimeout(function() {
+            jsonpSuccess( requestSettings, callbackContext, mockHandler );
+            jsonpComplete( requestSettings, callbackContext, mockHandler );
+        }, parseResponseTimeOpt(mockHandler.responseTime) || 0);
+
+        // If we are running under jQuery 1.5+, return a deferred object
+        if($.Deferred){
+            newMock = new $.Deferred();
+            if(typeof mockHandler.responseText == "object"){
+                newMock.resolveWith( callbackContext, [mockHandler.responseText] );
+            }
+            else{
+                newMock.resolveWith( callbackContext, [$.parseJSON( mockHandler.responseText )] );
+            }
+        }
+        return newMock;
+    }
+
+
+    // Create the required JSONP callback function for the request
+    function createJsonpCallback( requestSettings, mockHandler, origSettings ) {
+        var callbackContext = origSettings && origSettings.context || requestSettings;
+        var jsonp = requestSettings.jsonpCallback || ("jsonp" + jsc++);
+
+        // Replace the =? sequence both in the query string and the data
+        if ( requestSettings.data ) {
+            requestSettings.data = (requestSettings.data + "").replace(CALLBACK_REGEX, "=" + jsonp + "$1");
+        }
+
+        requestSettings.url = requestSettings.url.replace(CALLBACK_REGEX, "=" + jsonp + "$1");
+
+
+        // Handle JSONP-style loading
+        window[ jsonp ] = window[ jsonp ] || function( tmp ) {
+            data = tmp;
+            jsonpSuccess( requestSettings, callbackContext, mockHandler );
+            jsonpComplete( requestSettings, callbackContext, mockHandler );
+            // Garbage collect
+            window[ jsonp ] = undefined;
+
+            try {
+                delete window[ jsonp ];
+            } catch(e) {}
+
+            if ( head ) {
+                head.removeChild( script );
+            }
+        };
+    }
+
+    // The JSONP request was successful
+    function jsonpSuccess(requestSettings, callbackContext, mockHandler) {
+        // If a local callback was specified, fire it and pass it the data
+        if ( requestSettings.success ) {
+            requestSettings.success.call( callbackContext, mockHandler.responseText || "", status, {} );
+        }
+
+        // Fire the global callback
+        if ( requestSettings.global ) {
+            (requestSettings.context ? $(requestSettings.context) : $.event).trigger("ajaxSuccess", [{}, requestSettings]);
+        }
+    }
+
+    // The JSONP request was completed
+    function jsonpComplete(requestSettings, callbackContext) {
+        // Process result
+        if ( requestSettings.complete ) {
+            requestSettings.complete.call( callbackContext, {} , status );
+        }
+
+        // The request was completed
+        if ( requestSettings.global ) {
+            (requestSettings.context ? $(requestSettings.context) : $.event).trigger("ajaxComplete", [{}, requestSettings]);
+        }
+
+        // Handle the global AJAX counter
+        if ( requestSettings.global && ! --$.active ) {
+            $.event.trigger( "ajaxStop" );
         }
     }
 
 
-    function randomDate() {
-        return new Date(Math.floor(rand() * new Date().valueOf()));
+    // The core $.ajax replacement.
+    function handleAjax( url, origSettings ) {
+        var mockRequest, requestSettings, mockHandler, overrideCallback;
+
+        // If url is an object, simulate pre-1.5 signature
+        if ( typeof url === "object" ) {
+            origSettings = url;
+            url = undefined;
+        } else {
+            // work around to support 1.5 signature
+            origSettings = origSettings || {};
+            origSettings.url = url;
+        }
+
+        // Extend the original settings for the request
+        requestSettings = $.extend(true, {}, $.ajaxSettings, origSettings);
+
+        // Generic function to override callback methods for use with
+        // callback options (onAfterSuccess, onAfterError, onAfterComplete)
+        overrideCallback = function(action, mockHandler) {
+            var origHandler = origSettings[action.toLowerCase()];
+            return function() {
+                if ( $.isFunction(origHandler) ) {
+                    origHandler.apply(this, [].slice.call(arguments));
+                }
+                mockHandler['onAfter' + action]();
+            };
+        };
+
+        // Iterate over our mock handlers (in registration order) until we find
+        // one that is willing to intercept the request
+        for(var k = 0; k < mockHandlers.length; k++) {
+            if ( !mockHandlers[k] ) {
+                continue;
+            }
+
+            mockHandler = getMockForRequest( mockHandlers[k], requestSettings );
+            if(!mockHandler) {
+                // No valid mock found for this request
+                continue;
+            }
+
+            mockedAjaxCalls.push(requestSettings);
+
+            // If logging is enabled, log the mock to the console
+            $.mockjaxSettings.log( mockHandler, requestSettings );
+
+
+            if ( requestSettings.dataType && requestSettings.dataType.toUpperCase() === 'JSONP' ) {
+                if ((mockRequest = processJsonpMock( requestSettings, mockHandler, origSettings ))) {
+                    // This mock will handle the JSONP request
+                    return mockRequest;
+                }
+            }
+
+
+            // Removed to fix #54 - keep the mocking data object intact
+            //mockHandler.data = requestSettings.data;
+
+            mockHandler.cache = requestSettings.cache;
+            mockHandler.timeout = requestSettings.timeout;
+            mockHandler.global = requestSettings.global;
+
+            // In the case of a timeout, we just need to ensure
+            // an actual jQuery timeout (That is, our reponse won't)
+            // return faster than the timeout setting.
+            if ( mockHandler.isTimeout ) {
+                if ( mockHandler.responseTime > 1 ) {
+                    origSettings.timeout = mockHandler.responseTime - 1;
+                } else {
+                    mockHandler.responseTime = 2;
+                    origSettings.timeout = 1;
+                }
+                mockHandler.isTimeout = false;
+            }
+
+            // Set up onAfter[X] callback functions
+            if ( $.isFunction( mockHandler.onAfterSuccess ) ) {
+                origSettings.success = overrideCallback('Success', mockHandler);
+            }
+            if ( $.isFunction( mockHandler.onAfterError ) ) {
+                origSettings.error = overrideCallback('Error', mockHandler);
+            }
+            if ( $.isFunction( mockHandler.onAfterComplete ) ) {
+                origSettings.complete = overrideCallback('Complete', mockHandler);
+            }
+
+            copyUrlParameters(mockHandler, origSettings);
+
+            (function(mockHandler, requestSettings, origSettings, origHandler) {
+
+                mockRequest = _ajax.call($, $.extend(true, {}, origSettings, {
+                    // Mock the XHR object
+                    xhr: function() { return xhr( mockHandler, requestSettings, origSettings, origHandler ); }
+                }));
+            })(mockHandler, requestSettings, origSettings, mockHandlers[k]);
+
+            return mockRequest;
+        }
+
+        // We don't have a mock request
+        unmockedAjaxCalls.push(origSettings);
+        if($.mockjaxSettings.throwUnmocked === true) {
+            throw new Error('AJAX not mocked: ' + origSettings.url);
+        }
+        else { // trigger a normal request
+            return _ajax.apply($, [origSettings]);
+        }
+    }
+
+    /**
+     * Copies URL parameter values if they were captured by a regular expression
+     * @param {Object} mockHandler
+     * @param {Object} origSettings
+     */
+    function copyUrlParameters(mockHandler, origSettings) {
+        //parameters aren't captured if the URL isn't a RegExp
+        if (!(mockHandler.url instanceof RegExp)) {
+            return;
+        }
+        //if no URL params were defined on the handler, don't attempt a capture
+        if (!mockHandler.hasOwnProperty('urlParams')) {
+            return;
+        }
+        var captures = mockHandler.url.exec(origSettings.url);
+        //the whole RegExp match is always the first value in the capture results
+        if (captures.length === 1) {
+            return;
+        }
+        captures.shift();
+        //use handler params as keys and capture resuts as values
+        var i = 0,
+            capturesLength = captures.length,
+            paramsLength = mockHandler.urlParams.length,
+        //in case the number of params specified is less than actual captures
+            maxIterations = Math.min(capturesLength, paramsLength),
+            paramValues = {};
+        for (i; i < maxIterations; i++) {
+            var key = mockHandler.urlParams[i];
+            paramValues[key] = captures[i];
+        }
+        origSettings.urlParams = paramValues;
     }
 
 
-    $.mockJSON.data = {
-        NUMBER : "0123456789".split(''),
-        LETTER_UPPER : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(''),
-        LETTER_LOWER : "abcdefghijklmnopqrstuvwxyz".split(''),
-        MALE_FIRST_NAME : ["James", "John", "Robert", "Michael", "William", "David",
-            "Richard", "Charles", "Joseph", "Thomas", "Christopher", "Daniel",
-            "Paul", "Mark", "Donald", "George", "Kenneth", "Steven", "Edward",
-            "Brian", "Ronald", "Anthony", "Kevin", "Jason", "Matthew", "Gary",
-            "Timothy", "Jose", "Larry", "Jeffrey", "Frank", "Scott", "Eric"],
-        FEMALE_FIRST_NAME : ["Mary", "Patricia", "Linda", "Barbara", "Elizabeth",
-            "Jennifer", "Maria", "Susan", "Margaret", "Dorothy", "Lisa", "Nancy",
-            "Karen", "Betty", "Helen", "Sandra", "Donna", "Carol", "Ruth", "Sharon",
-            "Michelle", "Laura", "Sarah", "Kimberly", "Deborah", "Jessica",
-            "Shirley", "Cynthia", "Angela", "Melissa", "Brenda", "Amy", "Anna"],
-        LAST_NAME : ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller",
-            "Davis", "Garcia", "Rodriguez", "Wilson", "Martinez", "Anderson",
-            "Taylor", "Thomas", "Hernandez", "Moore", "Martin", "Jackson",
-            "Thompson", "White", "Lopez", "Lee", "Gonzalez", "Harris", "Clark",
-            "Lewis", "Robinson", "Walker", "Perez", "Hall", "Young", "Allen"],
-        EMAIL : function() {
-            return getRandomData('@LETTER_LOWER')
-            + '.'
-            + getRandomData('@LAST_NAME').toLowerCase()
-            + '@'
-            + getRandomData('@LAST_NAME').toLowerCase()
-            + '.com';
-        },
-        DATE_YYYY : function() {
-            var yyyy = randomDate().getFullYear();
-            return yyyy + '';
-        },
-        DATE_DD : function() {
-            return pad(randomDate().getDate());
-        },
-        DATE_MM : function() {
-            return pad(randomDate().getMonth() + 1);
-        },
-        TIME_HH : function() {
-            return pad(randomDate().getHours());
-        },
-        TIME_MM : function() {
-            return pad(randomDate().getMinutes());
-        },
-        TIME_SS : function() {
-            return pad(randomDate().getSeconds());
-        },
-        LOREM : function() {
-            var words = 'lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
-            var index = Math.floor(rand() * words.length);
-            return words[index];
-        },
-        LOREM_IPSUM : function() {
-            var words = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
-            var result = [];
-            var length = Math.floor(rand() * words.length / 2);
-            for (var i = 0; i < length; i++) {
-                var index = Math.floor(rand() * words.length);
-                result.push(words[index]);
+    // Public
+
+    $.extend({
+        ajax: handleAjax
+    });
+
+    $.mockjaxSettings = {
+        //url:        null,
+        //type:       'GET',
+        log:          function( mockHandler, requestSettings ) {
+            if ( mockHandler.logging === false ||
+                ( typeof mockHandler.logging === 'undefined' && $.mockjaxSettings.logging === false ) ) {
+                return;
             }
-            return result.join(' ');
+            if ( window.console && console.log ) {
+                var message = 'MOCK ' + requestSettings.type.toUpperCase() + ': ' + requestSettings.url;
+                var request = $.extend({}, requestSettings);
+
+                if (typeof console.log === 'function') {
+                    console.log(message, request);
+                } else {
+                    try {
+                        console.log( message + ' ' + JSON.stringify(request) );
+                    } catch (e) {
+                        console.log(message);
+                    }
+                }
+            }
+        },
+        logging:       true,
+        status:        200,
+        statusText:    "OK",
+        responseTime:  500,
+        isTimeout:     false,
+        throwUnmocked: false,
+        contentType:   'text/plain',
+        response:      '',
+        responseText:  '',
+        responseXML:   '',
+        proxy:         '',
+        proxyType:     'GET',
+
+        lastModified:  null,
+        etag:          '',
+        headers: {
+            etag: 'IJF@H#@923uf8023hFO@I#H#',
+            'content-type' : 'text/plain'
         }
     };
 
-
+    $.mockjax = function(settings) {
+        var i = mockHandlers.length;
+        mockHandlers[i] = settings;
+        return i;
+    };
+    $.mockjax.clear = function(i) {
+        if ( arguments.length == 1 ) {
+            mockHandlers[i] = null;
+        } else {
+            mockHandlers = [];
+        }
+        mockedAjaxCalls = [];
+        unmockedAjaxCalls = [];
+    };
+    // support older, deprecated version
+    $.mockjaxClear = function(i) {
+        window.console && window.console.warn && window.console.warn( 'DEPRECATED: The $.mockjaxClear() method has been deprecated in 1.6.0. Please use $.mockjax.clear() as the older function will be removed soon!' );
+        $.mockjax.clear();
+    };
+    $.mockjax.handler = function(i) {
+        if ( arguments.length == 1 ) {
+            return mockHandlers[i];
+        }
+    };
+    $.mockjax.mockedAjaxCalls = function() {
+        return mockedAjaxCalls;
+    };
+    $.mockjax.unfiredHandlers = function() {
+        var results = [];
+        for (var i=0, len=mockHandlers.length; i<len; i++) {
+            var handler = mockHandlers[i];
+            if (handler !== null && !handler.fired) {
+                results.push(handler);
+            }
+        }
+        return results;
+    };
+    $.mockjax.unmockedAjaxCalls = function() {
+        return unmockedAjaxCalls;
+    };
 })(jQuery);
