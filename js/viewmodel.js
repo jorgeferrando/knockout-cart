@@ -26,16 +26,8 @@ var vm = (function () {
 
     var cart = ko.observableArray([]);
 
-    var newProduct = {
-        name: ko.observable(),
-        price: ko.observable(),
-        stock: ko.observable(),
-        clear: function () {
-            this.name("");
-            this.price("");
-            this.stock("");
-        }
-    };
+    var newProduct = new Product(new Date().valueOf(),"",0,0);
+    var selectedProduct = null;
 
     var totalItems = ko.computed(function(){
         var tmpCart = cart();
@@ -98,7 +90,7 @@ var vm = (function () {
             .done(function (response){
                 catalog.push(product);
                 filteredCatalog(catalog());
-                newProduct.clear();
+                newProduct = new Product(new Date().valueOf(),"",0,0);
                 $('#addToCatalogModal').modal('hide');
             });
     };
@@ -171,16 +163,21 @@ var vm = (function () {
             });
     };
 
+    var allCallbackSuccess = function(response){
+        catalog([]);
+        response.data.forEach(function(item){
+            catalog.push(new Product(item.id,item.name,item.price,item.stock));
+        });
+        filteredCatalog(catalog());
+        if (catalog.length) {
+            selectedProduct = catalog()[0];
+        }
+        ko.applyBindings(vm);
+    };
+
     var activate = function () {
         dataContext.all()
-            .done(function(response){
-                catalog([]);
-                response.data.forEach(function(item){
-                    catalog.push(new Product(item.id,item.name,item.price,item.stock));
-                });
-                filteredCatalog(catalog());
-                ko.applyBindings(vm);
-            });
+            .done(allCallbackSuccess);
     };
 
 
@@ -193,6 +190,7 @@ var vm = (function () {
         filterCatalog:filterCatalog,
         cart: cart,
         newProduct: newProduct,
+        selectedProduct: selectedProduct,
         totalItems:totalItems,
         grandTotal:grandTotal,
         addProduct: addProduct,
@@ -214,5 +212,6 @@ var vm = (function () {
 //ko External Template Settings
 infuser.defaults.templateSuffix = ".html";
 infuser.defaults.templateUrl = "views";
+ko.validation.init();
 
 vm.activate();

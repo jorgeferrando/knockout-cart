@@ -12,24 +12,24 @@ function ProductService() {
             url: '/products/'+id
         });
     }
-    function save(product) {
+    function create(product) {
         return $.ajax({
             type: 'POST',
             url: '/products',
             data: product
         });
     }
-    function saveCart(cart) {
+    function save(product) {
         return $.ajax({
             type: 'PUT',
-            url: '/cart',
-            data: cart
+            url: '/products',
+            data: product
         });
     }
     return {
         all:all,
         get: get,
-        save: save,
-        saveCart: saveCart
+        create: create,
+        save: save
     };
 }

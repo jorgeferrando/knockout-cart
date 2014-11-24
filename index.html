@@ -6,6 +6,9 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/iCheck/skins/all.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <style>
+        .validationMessage { color: Red; }
+    </style>
 </head>
 <body>
 
@@ -22,6 +25,7 @@
     </div>
     <div data-bind="template: {name:'add-to-catalog-modal'}"></div>
     <div data-bind="template: {name:'finish-order-modal'}"></div>
+    <div data-bind="template: {name:'edit-product-modal'}"></div>
     <div data-bind="event: {mouseover:showDebug, mouseout:hideDebug}">
         <h3 style="cursor:pointer">Place the mouse over to display debug</h3>
         <pre class="well well-lg" data-bind="visible:debug, toJSON: $root"></pre>
@@ -36,11 +40,12 @@
 <script type="text/javascript" src="js/vendors/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/vendors/knockout.debug.js"></script>
 <script type="text/javascript" src="js/vendors/koExternalTemplateEngine_all.min.js"></script>
+<script type="text/javascript" src="js/vendors/ko.validation.js"></script>
 <script type="text/javascript" src="js/custom/koBindings.js"></script>
 <script type="text/javascript" src="js/custom/components.js"></script>
 <script type="text/javascript" src="js/models/product.js"></script>
 <script type="text/javascript" src="js/models/cartProduct.js"></script>
-<script type="text/javascript" src="js/mocks/mocks.js"></script>
+<script type="text/javascript" src="js/mocks/product.js"></script>
 <script type="text/javascript" src="js/services/product.js"></script>
 <script type="text/javascript" src="js/viewmodel.js"></script>
 <script type="text/javascript" src="js/events/cart.js"></script>

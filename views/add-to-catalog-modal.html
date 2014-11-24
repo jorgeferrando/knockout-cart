@@ -27,7 +27,7 @@
                     <div class="modal-footer">
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <button type="submit" class="btn btn-default" data-bind="{click:$parent.addProduct}"><i class="glyphicon glyphicon-plus-sign"></i> Add Product</button>
+                                <button type="submit" class="btn btn-default" data-bind="{click:$parent.addProduct, enable:!errors().length}"><i class="glyphicon glyphicon-plus-sign"></i> Add Product</button>
                             </div>
                         </div>
                     </div>

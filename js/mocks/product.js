@@ -38,18 +38,19 @@ $.mockjax({
     responseText: {
         "data": {
             result: "true",
-            text: "Product saved"
+            text: "Product created"
         }
     }
 });
 $.mockjax({
-    type: 'PUT',
-    url: '/cart',
+    url: "/products",
+    type:"PUT",
+    dataType: "json",
     responseTime: 750,
     responseText: {
         "data": {
             result: "true",
-            text: "Order saved"
+            text: "Product saved"
         }
     }
 });
