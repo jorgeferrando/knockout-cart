@@ -19,8 +19,11 @@
             <td data-bind="{text:stock}"></td>
             <td>
                 <add-to-cart-button params="{cart: $parent.cart, item: $data}"></add-to-cart-button>
-                <button class="btn btn-primary" data-bind="{click:$parent.openEditModal}">
+                <button class="btn btn-info" data-bind="{click:$parent.openEditModal}">
                     <i class="glyphicon glyphicon-pencil"></i>
+                </button>
+                <button class="btn btn-danger" data-bind="{click:$parent.deleteProduct}">
+                    <i class="glyphicon glyphicon-remove"></i>
                 </button>
             </td>
         </tr>

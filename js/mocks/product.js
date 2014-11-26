@@ -54,3 +54,16 @@ $.mockjax({
         }
     }
 });
+
+$.mockjax({
+    url: /^\/products\/([\d]+)$/,
+    type:"DELETE",
+    dataType: "json",
+    responseTime: 750,
+    responseText: {
+        "data": {
+            result: "true",
+            text: "Product deleted"
+        }
+    }
+});

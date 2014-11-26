@@ -26,10 +26,18 @@ function ProductService() {
             data: product
         });
     }
+
+    function remove(id) {
+        return $.ajax({
+            type: 'DELETE',
+            url: '/products/'+id
+        });
+    }
     return {
         all:all,
         get: get,
         create: create,
-        save: save
+        save: save,
+        remove: remove
     };
 }

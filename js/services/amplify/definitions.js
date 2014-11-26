@@ -25,3 +25,9 @@ amplify.request.define("product.save","ajax",{
     dataType:"json",
     url:"/products"
 });
+
+amplify.request.define("product.delete","ajax",{
+    type:"PUT",
+    dataType:"json",
+    url:"/products/{id}"
+});

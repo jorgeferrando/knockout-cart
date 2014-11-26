@@ -26,10 +26,18 @@ function ProductService() {
             success: callback
         });
     }
+    function remove(id,callback) {
+        amplify.request({
+            resourceId:"product.delete",
+            data: {id:id},
+            success:callback
+        });
+    }
     return {
         all:all,
         get: get,
         create: create,
-        save: save
+        save: save,
+        remove: remove
     };
 }

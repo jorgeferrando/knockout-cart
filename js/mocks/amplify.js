@@ -48,3 +48,13 @@ amplify.request.define("product.create",function (settings) {
     };
     settings.success(fakeData)
 });
+
+amplify.request.define("product.delete",function (settings) {
+    var fakeData = {
+        "data": {
+            result: "true",
+            text: "Product deleted"
+        }
+    };
+    settings.success(fakeData)
+});

@@ -163,6 +163,14 @@ var vm = (function () {
         }
     };
 
+    var deleteProduct = function (product){
+        dataContext.remove(product.id())
+            .done(function(response){
+                    catalog.remove(product);
+                    filteredCatalog(catalog());
+            });
+    };
+
     var hideCartDetails = function () {
         visibleCart(false);
     };
@@ -238,7 +246,8 @@ var vm = (function () {
         showDescription: showDescription,
         openEditModal: openEditModal,
         saveProduct: saveProduct,
-        cancelEdition: cancelEdition
+        cancelEdition: cancelEdition,
+        deleteProduct: deleteProduct
     };
 })();
 
