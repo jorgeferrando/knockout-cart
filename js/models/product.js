@@ -8,7 +8,7 @@ var Product = function (id,name,price,stock) {
             minLength: 3,
             pattern: {
                 message: 'Hey this doesn\'t match my pattern',
-                params: '^[A-Za-z0-9 ]+$'
+                params: '^[A-Za-z0-9 \-]+$'
             }
         }),
         _price = ko.observable(price).extend({
