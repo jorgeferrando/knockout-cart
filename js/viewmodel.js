@@ -2,6 +2,7 @@ var vm = (function () {
     "use strict";
 
     var dataContext = new ProductService();
+    var orderContext = new OrderService();
 
     var debug = ko.observable(false);
 
@@ -175,7 +176,7 @@ var vm = (function () {
     };
 
     var finishOrder = function() {
-        dataContext.saveCart()
+        orderContext.save()
             .done(function(response){
                 cart([]);
                 hideCartDetails();
