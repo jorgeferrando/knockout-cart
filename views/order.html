@@ -3,11 +3,16 @@
         <button class="btn btn-sm btn-primary" data-bind="click:showCatalog">
             Back to catalog
         </button>
-        <button class="btn btn-sm btn-primary" data-bind="click:finishOrder">
+        <button class="btn btn-sm btn-primary" data-bind="click:finishOrder, enable:!customer.errors().length">
             Buy & finish
         </button>
     </div>
-    <div class="col-xs-6">
+    <div class="col-xs-12">
+        <span class="text-danger" data-bind="visible:customer.errors().length">
+            Complete your personal data to receive the order.
+        </span>
+    </div>
+    <div class="col-xs-12 col-sm-6">
         <table class="table">
             <thead>
             <tr>
@@ -38,4 +43,43 @@
             </tr>
             </tfoot>
         </table>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        <form class="form-horizontal" role="form" data-bind="with:customer">
+            <div class="modal-header">
+                <h3>Customer Information</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control" placeholder="First Name" data-bind="textInput:firstName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control" placeholder="Last Name" data-bind="textInput:lastName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control" placeholder="Address" data-bind="textInput:address">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control" placeholder="Zip code" data-bind="textInput:zipCode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control" placeholder="Email" data-bind="textInput:email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <select class="form-control" data-bind="options: $parent.countries,value:country"></select>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>

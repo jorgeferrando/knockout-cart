@@ -4,6 +4,14 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <h2>Your order has been completed!</h2>
+                    <p>
+                        It will be sent to:
+                    </p>
+                    <p>
+                        <b>Name: </b><span data-bind="text:customer.fullName"></span><br/>
+                        <b>Address: </b><span data-bind="text:customer.fullAddress"></span><br/>
+                        <b>Email: </b><span data-bind="text:customer.email"></span><br/>
+                    </p>
                 </div>
                 <div class="modal-footer">
                     <div class="form-group">

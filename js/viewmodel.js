@@ -1,11 +1,11 @@
 var vm = (function () {
     "use strict";
-
+    var customer = customerData;
     var dataContext = new ProductService();
     var orderContext = new OrderService();
 
     var debug = ko.observable(false);
-
+    var countries = ko.observableArray(['United States','United Kingdom']);
     var showDebug = function () {
         debug(true);
     };
@@ -247,7 +247,9 @@ var vm = (function () {
         openEditModal: openEditModal,
         saveProduct: saveProduct,
         cancelEdition: cancelEdition,
-        deleteProduct: deleteProduct
+        deleteProduct: deleteProduct,
+        customer: customer,
+        countries: countries
     };
 })();
 
