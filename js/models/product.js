@@ -1,59 +1,63 @@
-var Product = function (id,name,price,stock) {
-    "use strict";
+var Shop = Shop || {};
+Shop.Models = Shop.Models || {};
+Shop.Models.Product  = (function (Product,ko){
+    return function (id,name,price,stock) {
+        "use strict";
 
-    var
-        _id = ko.observable(id),
-        _name = ko.observable(name).extend({
-            required: true,
-            minLength: 3,
-            pattern: {
-                message: 'Hey this doesn\'t match my pattern',
-                params: '^[A-Za-z0-9 \-]+$'
+        var
+            _id = ko.observable(id),
+            _name = ko.observable(name).extend({
+                required: true,
+                minLength: 3,
+                pattern: {
+                    message: 'Hey this doesn\'t match my pattern',
+                    params: '^[A-Za-z0-9 \-]+$'
+                }
+            }),
+            _price = ko.observable(price).extend({
+                required: true,
+                number: true,
+                min: 1
+            }),
+            _stock = ko.observable(stock).extend({
+                required: true,
+                min: 0,
+                max: 99,
+                number: true
+            })
+            ;
+
+        var hasStock = function () {
+            return _stock() > 0;
+        };
+
+        var decreaseStock = function (units) {
+            var s = _stock();
+            if (s > 0) {
+                s--;
             }
-        }),
-        _price = ko.observable(price).extend({
-            required: true,
-            number:true,
-            min: 1
-        }),
-        _stock = ko.observable(stock).extend({
-            required: true,
-            min: 0,
-            max: 99,
-            number: true
-        })
-    ;
+            _stock(s);
+        };
 
-    var hasStock = function () {
-        return _stock() > 0;
-    };
-
-    var decreaseStock = function (units) {
-        var s = _stock();
-        if (s > 0) {
-            s--;
+        var toObj = function () {
+            return {
+                id: _id(),
+                name: _name(),
+                price: _price(),
+                stock: _stock()
+            };
         }
-        _stock(s);
-    };
 
-    var toObj = function () {
+        var errors = ko.validation.group([_name, _price, _stock]);
         return {
-            id: _id(),
-            name: _name(),
-            price: _price(),
-            stock: _stock()
+            id: _id,
+            name: _name,
+            price: _price,
+            stock: _stock,
+            hasStock: hasStock,
+            decreaseStock: decreaseStock,
+            toObj: toObj,
+            errors: errors
         };
     }
-
-    var errors = ko.validation.group([_name, _price, _stock]);
-    return {
-        id:_id,
-        name:_name,
-        price:_price,
-        stock:_stock,
-        hasStock: hasStock,
-        decreaseStock:decreaseStock,
-        toObj: toObj,
-        errors: errors
-    };
-};
+})(Shop.Models.Product || {}, ko);

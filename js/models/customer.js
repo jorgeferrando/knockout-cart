@@ -1,4 +1,6 @@
-var customerData = (function () {
+var Shop = Shop || {};
+Shop.Models = Shop.Models || {};
+Shop.Models.Customer = (function (ko) {
 
     var firstName = ko.observable("").extend({
         required: true
@@ -31,15 +33,18 @@ var customerData = (function () {
         return address() + " " + zipCode() + ", " + country();
     });
     var errors = ko.validation.group([firstName, lastName, address, email, zipCode]);
-    return {
-        firstName:firstName,
-        lastName: lastName,
-        fullName: fullName,
-        address: address,
-        email: email,
-        zipCode: zipCode,
-        country: country,
-        fullAddress: fullAddress,
-        errors: errors
+
+    return function () {
+        return {
+            firstName:firstName,
+            lastName: lastName,
+            fullName: fullName,
+            address: address,
+            email: email,
+            zipCode: zipCode,
+            country: country,
+            fullAddress: fullAddress,
+            errors: errors
+        };
     };
-})();
+})(ko);

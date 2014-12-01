@@ -1,40 +1,42 @@
-var CartProduct = function (product, units) {
-    "use strict";
+var Shop = Shop || {};
+Shop.Models = Shop.Models || {};
+Shop.Models.CartProduct = (function (CartProduct,ko){
+    return function (product,units) {
+        var
+            _product = product,
+            _units = ko.observable(units)
+            ;
 
-    var
-        _product = product,
-        _units = ko.observable(units)
-    ;
+        var subtotal = ko.computed(function(){
+            return _product.price() * _units();
+        });
 
-    var subtotal = ko.computed(function(){
-        return _product.price() * _units();
-    });
+        var addUnit = function () {
+            var u = _units();
+            var _stock = _product.stock();
+            if (_stock === 0) {
+                return;
+            }
+            _units(u+1);
+            _product.stock(--_stock);
+        };
 
-    var addUnit = function () {
-        var u = _units();
-        var _stock = _product.stock();
-        if (_stock === 0) {
-            return;
-        }
-        _units(u+1);
-        _product.stock(--_stock);
-    };
+        var removeUnit = function () {
+            var u = _units();
+            var _stock = _product.stock();
+            if (u === 0) {
+                return;
+            }
+            _units(u-1);
+            _product.stock(++_stock);
+        };
 
-    var removeUnit = function () {
-        var u = _units();
-        var _stock = _product.stock();
-        if (u === 0) {
-            return;
-        }
-        _units(u-1);
-        _product.stock(++_stock);
-    };
-
-    return {
-        product: _product,
-        units: _units,
-        subtotal: subtotal,
-        addUnit : addUnit,
-        removeUnit: removeUnit
-    };
-};
+        return {
+            product: _product,
+            units: _units,
+            subtotal: subtotal,
+            addUnit : addUnit,
+            removeUnit: removeUnit
+        };
+    }
+})(Shop.Models.CartProduct || {}, ko);
