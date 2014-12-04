@@ -8,15 +8,7 @@ Shop.ViewModel = (function (vm, ko, $) {
         var dataContext = new Shop.Services.Product();
         var orderContext = new Shop.Services.Order();
 
-        var debug = ko.observable(false);
         var countries = ko.observableArray(['United States','United Kingdom']);
-        var showDebug = function () {
-            debug(true);
-        };
-
-        var hideDebug = function () {
-            debug(false);
-        };
 
         var visibleCatalog = ko.observable(true);
 
@@ -224,9 +216,6 @@ Shop.ViewModel = (function (vm, ko, $) {
         };
 
         return {
-            debug: debug,
-            showDebug: showDebug,
-            hideDebug: hideDebug,
             searchTerm: searchTerm,
             catalog: filteredCatalog,
             filterCatalog: filterCatalog,
