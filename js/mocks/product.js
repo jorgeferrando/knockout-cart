@@ -1,7 +1,6 @@
-var Shop = Shop || {};
-Shop.Mocks = (function(mocks, jQuery){
+define(['jquery','mockjax','mockjson'],function($){
 
-    mocks.product = function () {
+    return function () {
         $.mockJSON.data.PRODUCTNAME = [
             'T-SHIRT', 'SHIRT', 'TROUSERS', 'JEANS', 'SHORTS', 'GLOVES', 'TIE'
         ];
@@ -72,6 +71,4 @@ Shop.Mocks = (function(mocks, jQuery){
             }
         });
     };
-
-    return mocks;
-})(Shop.Mocks || {}, $);
+});

@@ -1,6 +1,4 @@
-var Shop = Shop || {};
-Shop.Services = Shop.Services || {};
-Shop.Services.Product = (function($){
+define(['jquery'],function($){
     return function () {
         function all() {
             return $.ajax({
@@ -43,4 +41,4 @@ Shop.Services.Product = (function($){
             remove: remove
         };
     }
-})(jQuery);
+});

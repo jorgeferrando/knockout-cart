@@ -1,6 +1,4 @@
-var Shop = Shop || {};
-Shop.Models = Shop.Models || {};
-Shop.Models.CartProduct = (function (CartProduct,ko){
+define(['knockout'],function(ko){
     return function (product,units) {
         var
             _product = product,
@@ -39,4 +37,4 @@ Shop.Models.CartProduct = (function (CartProduct,ko){
             removeUnit: removeUnit
         };
     }
-})(Shop.Models.CartProduct || {}, ko);
+});

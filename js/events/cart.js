@@ -1,6 +1,6 @@
-var Shop = Shop || {};
+define(['jquery','knockout'],function ($,ko) {
+    var events = {};
 
-Shop.Events = (function (events, ko, $) {
     events.showOrder = function () {
         $("#confirmOrderBtn").click(function() {
             vm.showOrder();
@@ -36,4 +36,4 @@ Shop.Events = (function (events, ko, $) {
         }
     };
     return events;
-})(Shop.Events || {}, ko, jQuery);
+});

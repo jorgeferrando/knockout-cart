@@ -1,6 +1,5 @@
-var Shop = Shop || {};
-Shop.Components = (function (components, CartProduct, ko) {
-
+define(['knockout','models/cartProduct'],function (ko, CartProduct) {
+    var components = {};
     components.AddToCartButton = function () {
         ko.components.register('add-to-cart-button', {
             viewModel: function (params) {
@@ -61,4 +60,4 @@ Shop.Components = (function (components, CartProduct, ko) {
     };
     return components;
 
-})(Shop.Components || {}, Shop.Models.CartProduct, ko);
+});

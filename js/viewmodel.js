@@ -1,12 +1,17 @@
-var Shop = Shop || {};
-
-Shop.ViewModel = (function (vm, ko, $) {
+define([
+    'ko',
+    'models/product',
+    'models/customer',
+    'models/cartProduct',
+    'services/product',
+    'services/order'
+],function (ko, Product, Customer, CartProduct, ProductService, OrderService) {
     "use strict";
     return function() {
         var self = null;
-        var customer =  new Shop.Models.Customer(); //customerData;
-        var dataContext = new Shop.Services.Product();
-        var orderContext = new Shop.Services.Order();
+        var customer =  new Customer(); //customerData;
+        var dataContext = new ProductService();
+        var orderContext = new OrderService();
 
         var countries = ko.observableArray(['United States','United Kingdom']);
 
@@ -23,7 +28,7 @@ Shop.ViewModel = (function (vm, ko, $) {
 
         var cart = ko.observableArray([]);
 
-        var newProduct = new Shop.Models.Product(new Date().valueOf(),"",0,0);
+        var newProduct = new Product(new Date().valueOf(),"",0,0);
         var selectedProduct = ko.observable(newProduct);
         var tmpProduct = null;
 
@@ -107,7 +112,7 @@ Shop.ViewModel = (function (vm, ko, $) {
             if (item) {
                 item.addUnit();
             } else {
-                item = new Shop.Models.CartProduct(data,1);
+                item = new CartProduct(data,1);
                 tmpCart.push(item);
                 item.product.decreaseStock(1);
             }
@@ -124,7 +129,7 @@ Shop.ViewModel = (function (vm, ko, $) {
         };
 
         var clone = function (p) {
-            return new Shop.Models.Product(p.id(), p.name(), p.price(), p.stock());
+            return new Product(p.id(), p.name(), p.price(), p.stock());
         };
 
         var openEditModal = function (product) {
@@ -245,21 +250,4 @@ Shop.ViewModel = (function (vm, ko, $) {
             countries: countries
         };
     };
-})(Shop.ViewModel || {}, ko, jQuery);
-
-//ko External Template Settings
-infuser.defaults.templateSuffix = ".html";
-infuser.defaults.templateUrl = "views";
-ko.validation.init();
-
-//initialize components
-Shop.Components.init();
-Shop.Bindings.init();
-Shop.Events.init();
-
-//Mocks
-Shop.Mocks.order();
-Shop.Mocks.product();
-
-var vm = new Shop.ViewModel();
-vm.activate();
+});

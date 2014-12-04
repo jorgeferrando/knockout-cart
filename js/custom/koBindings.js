@@ -1,5 +1,6 @@
-var Shop = Shop || {};
-Shop.Bindings = (function(bindings, ko, $){
+define(['knockout'],function(ko){
+    var bindings = {};
+
     bindings.toggle = function(){
         //toggle binding
         ko.bindingHandlers.toggle = {
@@ -96,4 +97,4 @@ Shop.Bindings = (function(bindings, ko, $){
         }
     };
     return bindings;
-})(Shop.Bindings || {},ko,jQuery)
+});

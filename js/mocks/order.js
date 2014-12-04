@@ -1,8 +1,7 @@
-var Shop = Shop || {};
-Shop.Mocks = (function(mocks, mockjax){
+define(['jquery','mockjax','mockjson'],function($){
 
-    mocks.order = function () {
-        mockjax({
+    return function () {
+        $.mockjax({
             type: 'PUT',
             url: '/order',
             responseTime: 750,
@@ -14,6 +13,4 @@ Shop.Mocks = (function(mocks, mockjax){
             }
         });
     };
-
-    return mocks;
-})(Shop.Mocks || {}, $.mockjax);
+});

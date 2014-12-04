@@ -1,6 +1,4 @@
-var Shop = Shop || {};
-Shop.Services = Shop.Services || {};
-Shop.Services.Order = (function($){
+define(['jquery'],function($){
     return function () {
         function save(orderAndCustomer) {
             return $.ajax({
@@ -13,6 +11,6 @@ Shop.Services.Order = (function($){
             save: save
         };
     };
-})(jQuery);
+});
 
 

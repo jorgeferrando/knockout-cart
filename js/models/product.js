@@ -1,6 +1,4 @@
-var Shop = Shop || {};
-Shop.Models = Shop.Models || {};
-Shop.Models.Product  = (function (Product,ko){
+define(['knockout'],function (ko){
     return function (id,name,price,stock) {
         "use strict";
 
@@ -60,4 +58,4 @@ Shop.Models.Product  = (function (Product,ko){
             errors: errors
         };
     }
-})(Shop.Models.Product || {}, ko);
+});

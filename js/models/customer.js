@@ -1,6 +1,4 @@
-var Shop = Shop || {};
-Shop.Models = Shop.Models || {};
-Shop.Models.Customer = (function (ko) {
+define(['knockout','ko.validation'],function (ko) {
 
     var firstName = ko.observable("").extend({
         required: true
@@ -47,4 +45,4 @@ Shop.Models.Customer = (function (ko) {
             errors: errors
         };
     };
-})(ko);
+});
