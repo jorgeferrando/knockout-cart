@@ -1,5 +1,5 @@
 define([
-    'ko',
+    'knockout',
     'models/product',
     'models/customer',
     'models/cartProduct',
@@ -205,7 +205,7 @@ define([
         var allCallbackSuccess = function(response){
             catalog([]);
             response.data.forEach(function(item){
-                catalog.push(new Shop.Models.Product(item.id,item.name,item.price,item.stock));
+                catalog.push(new Product(item.id,item.name,item.price,item.stock));
             });
             filteredCatalog(catalog());
             if (catalog().length) {

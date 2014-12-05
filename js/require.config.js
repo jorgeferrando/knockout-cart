@@ -8,7 +8,7 @@ require.config({
         mockjson: 'vendors/jquery.mockjson',
         knockout: 'vendors/knockout.debug',
         'ko.validation':'vendors/ko.validation',
-        'ko.templateEngine': 'vendors/koExternalTemplateEngine_all.min',
+        'koAmdHelpers': 'vendors/knockout-amd-helpers',
         text: 'vendors/require.text'
     },
     shim: {

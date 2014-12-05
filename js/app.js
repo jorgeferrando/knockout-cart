@@ -2,7 +2,7 @@ define([
     //LIBRARIES
     'bootstrap',
     'knockout',
-    'ko.templateEngine',
+    'koAmdHelpers',
     'ko.validation',
 
     //VIEWMODEL
@@ -25,10 +25,11 @@ define([
 
     //EVENTS
     'events/cart'
-], function(bs, ko, koValidation, koTemplates, ViewModel, ProductService, OrderService, productMocks, orderMocks, components, bindings, events) {
+], function(bs, ko, koValidation, koAmdHelpers, ViewModel, ProductService, OrderService, productMocks, orderMocks, components, bindings, events) {
     //ko External Template Settings
-    infuser.defaults.templateSuffix = ".html";
-    infuser.defaults.templateUrl = "views";
+    ko.amdTemplateEngine.defaultPath = "../views";
+    ko.amdTemplateEngine.defaultSuffix = ".html";
+    ko.amdTemplateEngine.defaultRequireTextPluginName = "text";
     ko.validation.init();
 
     //initialize components
