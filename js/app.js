@@ -8,11 +8,6 @@ define([
     //VIEWMODEL
     'viewmodel',
 
-
-    //SERVICES
-    'services/product',
-    'services/order',
-
     //MOCKS
     'mocks/product',
     'mocks/order',
@@ -25,7 +20,7 @@ define([
 
     //EVENTS
     'events/cart'
-], function(bs, ko, koValidation, koAmdHelpers, ViewModel, ProductService, OrderService, productMocks, orderMocks, components, bindings, events) {
+], function(bs, ko, koValidation, koAmdHelpers, ViewModel, productMocks, orderMocks, components, bindings, events) {
     //ko External Template Settings
     ko.amdTemplateEngine.defaultPath = "../views";
     ko.amdTemplateEngine.defaultSuffix = ".html";
