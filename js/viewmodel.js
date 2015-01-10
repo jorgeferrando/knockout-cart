@@ -112,11 +112,11 @@ define([
             if (item) {
                 item.addUnit();
             } else {
-                item = new CartProduct(data,1);
+                item = new CartProduct(data,0);
+                item.addUnit();
                 tmpCart.push(item);
-                item.product.decreaseStock(1);
+                //item.product.decreaseStock(1);
             }
-
             cart(tmpCart);
         };
 
