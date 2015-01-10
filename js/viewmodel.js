@@ -47,11 +47,9 @@ var vm = (function () {
             var i = fields.length;
             while (i--) {
                 var prop = fields[i];
-                if (item.hasOwnProperty(prop) && ko.isObservable(item[prop])) {
-                    var strProp = ko.utils.unwrapObservable(item[prop]).toLocaleLowerCase();
-                    if (strProp && (strProp.indexOf(filter) !== -1)) {
-                        return true;
-                    }
+                var strProp = ko.unwrap(item[prop]).toLocaleLowerCase();
+                if (strProp.indexOf(filter) !== -1) {
+                    return true;
                 }
             }
             return false;
