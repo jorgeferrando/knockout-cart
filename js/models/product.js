@@ -12,20 +12,11 @@ var Product = function (id,name,price,stock) {
         return _stock() > 0;
     };
 
-    var decreaseStock = function (units) {
-        var s = _stock();
-        if (s > 0) {
-            s--;
-        }
-        _stock(s);
-    };
-
     return {
         id:_id,
         name:_name,
         price:_price,
         stock:_stock,
-        hasStock: hasStock,
-        decreaseStock:decreaseStock
+        hasStock: hasStock
     };
 };
