@@ -29,14 +29,6 @@ define(['knockout'],function (ko){
             return _stock() > 0;
         };
 
-        var decreaseStock = function (units) {
-            var s = _stock();
-            if (s > 0) {
-                s--;
-            }
-            _stock(s);
-        };
-
         var toObj = function () {
             return {
                 id: _id(),
@@ -53,7 +45,6 @@ define(['knockout'],function (ko){
             price: _price,
             stock: _stock,
             hasStock: hasStock,
-            decreaseStock: decreaseStock,
             toObj: toObj,
             errors: errors
         };
