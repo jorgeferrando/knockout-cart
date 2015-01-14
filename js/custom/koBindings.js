@@ -51,24 +51,20 @@ define(['knockout'],function(ko){
     bindings.iCheck = function () {
         //iCheck binding
         ko.bindingHandlers.icheck = {
-            init: function (element, valueAccessor) {
+            init: function (element, valueAccessor, allBindings) {
+                var checkedBinding = allBindings.get('checked');
                 $(element).iCheck({
                     checkboxClass: 'icheckbox_minimal-blue',
                     increaseArea: '10%'
                 });
-
-                $(element).on('ifChanged', function () {
-                    var observable = valueAccessor();
-                    observable($(element)[0].checked);
+                $(element).on('ifChanged', function (event) {
+                    checkedBinding(event.target.checked);
                 });
             },
-            update: function (element, valueAccessor) {
-                var value = ko.unwrap(valueAccessor());
-                if (value) {
-                    $(element).iCheck('check');
-                } else {
-                    $(element).iCheck('uncheck');
-                }
+            update: function (element,valueAccessor, allBindings) {
+                var checkedBinding = allBindings.get('checked');
+                var checked = checkedBinding()?'check':'uncheck';
+                $(element).iCheck(checked);
             }
         };
     };

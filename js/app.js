@@ -4,6 +4,7 @@ define([
     'knockout',
     'koAmdHelpers',
     'ko.validation',
+    'icheck',
 
     //VIEWMODEL
     'viewmodel',
@@ -20,7 +21,7 @@ define([
 
     //EVENTS
     'events/cart'
-], function(bs, ko, koValidation, koAmdHelpers, ViewModel, productMocks, orderMocks, components, bindings, events) {
+], function(bs, ko, koAmdHelpers, koValidation, icheck, ViewModel, productMocks, orderMocks, components, bindings, events) {
     //ko External Template Settings
     ko.amdTemplateEngine.defaultPath = "../views";
     ko.amdTemplateEngine.defaultSuffix = ".html";

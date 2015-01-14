@@ -33,6 +33,9 @@ require.config({
         },
         'ko.templateEngine': {
             deps:['knockout']
+        },
+        icheck: {
+            deps: ['jquery']
         }
     },
     deps: ['app']
