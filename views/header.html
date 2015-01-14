@@ -9,5 +9,5 @@
     <button class="btn btn-primary btn-sm" data-bind="toggle:visibleCart, css:{disabled:cart().length  < 1}">
         <span data-bind="text: visibleCart()?'Hide':'Show'"></span> Cart Details
     </button>
-    <input type="checkbox" data-bind="icheck:showSearchBar"/> Show Search options
+    <input type="checkbox" data-bind="icheck, checked:showSearchBar"/> Show Search options
     <hr/>
