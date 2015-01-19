@@ -1,26 +1,26 @@
 //Event handling
 (function() {
     "use strict";
-    $("#confirmOrderBtn").click(function() {
+    $(document).on("click","#confirmOrderBtn", function() {
         vm.showOrder();
     });
 
     $(document).on("click", ".add-unit", function() {
         var data = ko.dataFor(this);
-        $(document).trigger("product:action",[data,"addUnit"]);
+        $(document).trigger("addUnit",[data]);
     });
 
     $(document).on("click", ".remove-unit", function() {
         var data = ko.dataFor(this);
-        $(document).trigger("product:action",[data,"removeUnit"]);
+        $(document).trigger("removeUnit",[data]);
     });
 
-    $(document).on("product:action",function(event, data, action){
-        if(data.hasOwnProperty(action)) {
-            if (typeof data[action] === 'function'){
-                data[action]();
-            }
-        }
+    $(document).on("addUnit",function(event, data){
+        data.addUnit();
+    });
+
+    $(document).on("removeUnit",function(event, data){
+        data.removeUnit();
     });
 })();
 
