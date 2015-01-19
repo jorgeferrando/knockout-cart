@@ -138,8 +138,8 @@ var vm = (function () {
 
     var finishOrder = function() {
         cart([]);
-        hideCartDetails();
         showCatalog();
+        visibleCart(false);
         $("#finishOrderModal").modal('show');
     };
 
@@ -157,7 +157,6 @@ var vm = (function () {
         visibleCart: visibleCart,
         showSearchBar: showSearchBar,
         showCartDetails: showCartDetails,
-        hideCartDetails: hideCartDetails,
         showOrder: showOrder,
         showCatalog: showCatalog,
         finishOrder: finishOrder

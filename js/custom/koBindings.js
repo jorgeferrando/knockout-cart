@@ -15,8 +15,8 @@ ko.bindingHandlers.currency = {
     symbol: ko.observable('$'),
     update: function(element, valueAccessor, allBindingsAccessor){
         return ko.bindingHandlers.text.update(element,function(){
-            var value = +(ko.utils.unwrapObservable(valueAccessor()) || 0),
-                symbol = ko.utils.unwrapObservable(allBindingsAccessor().symbol === undefined
+            var value = +(ko.unwrap(valueAccessor()) || 0),
+                symbol = ko.unwrap(allBindingsAccessor().symbol !== undefined
                     ? allBindingsAccessor().symbol
                     : ko.bindingHandlers.currency.symbol);
             return symbol + value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
@@ -43,8 +43,8 @@ ko.bindingHandlers.isCartVisible = {
 
 //iCheck binding
 ko.bindingHandlers.icheck = {
-    init: function (element, valueAccessor, allBindings) {
-        var checkedBinding = allBindings.get('checked');
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        var checkedBinding = allBindingsAccessor().checked;
         $(element).iCheck({
             checkboxClass: 'icheckbox_minimal-blue',
             increaseArea: '10%'
@@ -54,8 +54,8 @@ ko.bindingHandlers.icheck = {
         });
     },
     update: function (element,valueAccessor, allBindings) {
-        var checkedBinding = allBindings.get('checked');
-        var checked = checkedBinding()?'check':'uncheck';
-        $(element).iCheck(checked);
+        var checkedBinding = allBindingsAccessor().checked;
+        var status = checked?'check':'uncheck';
+        $(element).iCheck(status);
     }
 };
