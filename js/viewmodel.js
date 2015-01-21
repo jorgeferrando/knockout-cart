@@ -61,16 +61,9 @@ var vm = (function () {
         var filter = searchTerm().toLowerCase();
         //filter data
         var filtered = ko.utils.arrayFilter(catalog(), function (item) {
-            var fields = ["name"]; //we can filter several properties
-            var i = fields.length;
-            while (i--) {
-                var prop = fields[i];
-                if (item.hasOwnProperty(prop) && ko.isObservable(item[prop])) {
-                    var strProp = ko.utils.unwrapObservable(item[prop]).toLocaleLowerCase();
-                    if (item[prop]() && (strProp.indexOf(filter) !== -1)) {
-                        return true;
-                    }
-                }
+            var strProp = ko.unwrap(item['name']).toLocaleLowerCase();
+            if (strProp && (strProp.indexOf(filter) !== -1)) {
+                return true;
             }
             return false;
         });
