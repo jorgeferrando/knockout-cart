@@ -3,9 +3,9 @@ var vm = (function () {
     var customer = customerData;
     var dataContext = new ProductService();
     var orderContext = new OrderService();
-
     var debug = ko.observable(false);
     var countries = ko.observableArray(['United States','United Kingdom']);
+
     var showDebug = function () {
         debug(true);
     };
@@ -18,12 +18,7 @@ var vm = (function () {
 
     var visibleCart = ko.observable(false);
 
-    var catalog = ko.observableArray([
-        //new Product(1, "T-Shirt", 10.00, 20),
-        //new Product(2, "Trousers", 20.00, 10),
-        //new Product(3, "Shirt", 15.00, 20),
-        //new Product(4, "Shorts", 5.00, 10)
-    ]);
+    var catalog = ko.observableArray([]);
 
     var cart = ko.observableArray([]);
 
@@ -74,42 +69,20 @@ var vm = (function () {
 
     var addProduct = function (data) {
         var id = new Date().valueOf();
-        var product = new Product(
+        var product = Product(
             id,
             data.name(),
             data.price(),
             data.stock()
         );
 
-        dataContext.save(product.toObj())
+        dataContext.save(ko.toJS(product))
             .done(function (response){
                 catalog.push(product);
                 filteredCatalog(catalog());
-                newProduct = new Product(new Date().valueOf(),"",0,0);
+                newProduct = Product(new Date().valueOf(),"",0,0);
                 $('#addToCatalogModal').modal('hide');
             });
-    };
-
-    var addToCart = function(data) {
-        var item = null;
-        var tmpCart = cart();
-        var n = tmpCart.length;
-
-        while(n--) {
-            if (tmpCart[n].product.id() === data.id()) {
-                item = tmpCart[n];
-            }
-        }
-
-        if (item) {
-            item.addUnit();
-        } else {
-            item = new CartProduct(data,1);
-            tmpCart.push(item);
-            item.product.decreaseStock(1);
-        }
-
-        cart(tmpCart);
     };
 
     var removeFromCart = function (data) {
@@ -120,31 +93,40 @@ var vm = (function () {
         cart.remove(data);
     };
 
-    var clone = function (p) {
-        return new Product(p.id(), p.name(), p.price(), p.stock());
-    };
+    var removeFromCartByProduct = function (product) {
+        var tmpCart = cart();
+        var i = tmpCart.length;
+        var item;
+        while(i--){
+            if (tmpCart[i].product.id() === product.id()){
+                item = tmpCart[i];
+            }
+        }
+        removeFromCart(item);
+    }
 
     var openEditModal = function (product) {
-        tmpProduct = clone(product);
-        selectedProduct(product);
+        var pm = ProductManager(product);
+        selectedProduct(pm.clone());
         $('#editProductModal').modal('show');
     };
 
     var saveProduct = function (product) {
-        dataContext.save(product.toObj()).done(function(response){
+        dataContext.save(ko.toJS(product)).done(function(response){
+            var tmpCatalog = catalog();
+            var i = tmpCatalog.length;
+            while(i--){
+                if(tmpCatalog[i].id() === product.id()){
+                    tmpCatalog[i] = product;
+                }
+            }
+            catalog(tmpCatalog);
+            filterCatalog();
             $('#editProductModal').modal('hide');
         });
     };
 
-    var restoreProduct = function (p) {
-        p.id(tmpProduct.id());
-        p.name(tmpProduct.name());
-        p.stock(tmpProduct.stock());
-        p.price(tmpProduct.price());
-    };
-
     var cancelEdition = function (product) {
-        restoreProduct(product);
         $('#editProductModal').modal('hide');
     };
 
@@ -159,8 +141,9 @@ var vm = (function () {
     var deleteProduct = function (product){
         dataContext.remove(product.id())
             .done(function(response){
-                    catalog.remove(product);
-                    filteredCatalog(catalog());
+                catalog.remove(product);
+                filteredCatalog(catalog());
+                removeFromCartByProduct(product);
             });
     };
 
@@ -177,7 +160,12 @@ var vm = (function () {
     };
 
     var finishOrder = function() {
-        orderContext.save()
+        var data = {
+            order: ko.toJS(cart),
+            customer: ko.toJS(customerData)
+        };
+        console.log(data);
+        orderContext.save(data)
             .done(function(response){
                 cart([]);
                 hideCartDetails();
@@ -225,7 +213,6 @@ var vm = (function () {
         totalItems:totalItems,
         grandTotal:grandTotal,
         addProduct: addProduct,
-        addToCart: addToCart,
         removeFromCart:removeFromCart,
         visibleCatalog: visibleCatalog,
         visibleCart: visibleCart,

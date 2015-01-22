@@ -9,6 +9,10 @@ ko.components.register('add-to-cart-button', {
             var n = tmpCart.length;
             var item = null;
 
+            if(data.stock()<1) {
+                return;
+            }
+
             while(n--) {
                 if (tmpCart[n].product.id() === data.id()) {
                     item = tmpCart[n];
@@ -16,11 +20,13 @@ ko.components.register('add-to-cart-button', {
             }
 
             if (item) {
-                item.addUnit();
+                var cm = CartItemManager(item);
+                cm.addUnit();
             } else {
-                item = new CartProduct(data,1);
+                item = CartProduct(data,1);
                 tmpCart.push(item);
-                item.product.decreaseStock(1);
+                var pm = ProductManager(item.product);
+                pm.decreaseStock();
             }
 
             this.cart(tmpCart);

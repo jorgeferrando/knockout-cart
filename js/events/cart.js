@@ -16,11 +16,13 @@
     });
 
     $(document).on("addUnit",function(event, data){
-        data.addUnit();
+        var cm = CartItemManager(data);
+        cm.addUnit();
     });
 
     $(document).on("removeUnit",function(event, data){
-        data.removeUnit();
+        var cm = CartItemManager(data);
+        cm.removeUnit();
     });
 })();
 

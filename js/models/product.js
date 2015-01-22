@@ -24,36 +24,13 @@ var Product = function (id,name,price,stock) {
         })
     ;
 
-    var hasStock = function () {
-        return _stock() > 0;
-    };
-
-    var decreaseStock = function (units) {
-        var s = _stock();
-        if (s > 0) {
-            s--;
-        }
-        _stock(s);
-    };
-
-    var toObj = function () {
-        return {
-            id: _id(),
-            name: _name(),
-            price: _price(),
-            stock: _stock()
-        };
-    }
-
     var errors = ko.validation.group([_name, _price, _stock]);
+
     return {
         id:_id,
         name:_name,
         price:_price,
         stock:_stock,
-        hasStock: hasStock,
-        decreaseStock:decreaseStock,
-        toObj: toObj,
         errors: errors
     };
 };

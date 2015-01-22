@@ -52,7 +52,6 @@ $.mockjax({
     status:200,
     responseText: {
         "data": {
-            result: "true",
             text: "Product saved"
         }
     }

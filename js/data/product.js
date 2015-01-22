@@ -22,7 +22,7 @@ function ProductService() {
     function save(product) {
         return $.ajax({
             type: 'PUT',
-            url: '/products',
+            url: '/products/'+product.id,
             data: product
         });
     }
@@ -33,6 +33,7 @@ function ProductService() {
             url: '/products/'+id
         });
     }
+
     return {
         all:all,
         get: get,
