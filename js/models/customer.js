@@ -1,4 +1,4 @@
-var customerData = (function () {
+var CustomerData = (function () {
 
     var firstName = ko.observable("").extend({
         required: true

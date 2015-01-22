@@ -1,8 +1,6 @@
 var vm = (function () {
     "use strict";
-    var customer = customerData;
-    var dataContext = new ProductService();
-    var orderContext = new OrderService();
+    var customer = CustomerData;
     var debug = ko.observable(false);
     var countries = ko.observableArray(['United States','United Kingdom']);
 
@@ -22,7 +20,7 @@ var vm = (function () {
 
     var cart = ko.observableArray([]);
 
-    var newProduct = new Product(new Date().valueOf(),"",0,0);
+    var newProduct = Product(new Date().valueOf(),"",0,0);
     var selectedProduct = ko.observable(newProduct);
     var tmpProduct = null;
 
@@ -54,7 +52,7 @@ var vm = (function () {
             filteredCatalog(catalog());
         }
         var filter = searchTerm().toLowerCase();
-        //filter data
+        //filter resources
         var filtered = ko.utils.arrayFilter(catalog(), function (item) {
             var strProp = ko.unwrap(item['name']).toLocaleLowerCase();
             if (strProp && (strProp.indexOf(filter) !== -1)) {
@@ -76,7 +74,7 @@ var vm = (function () {
             data.stock()
         );
 
-        dataContext.save(ko.toJS(product))
+        ProductResource.save(ko.toJS(product))
             .done(function (response){
                 catalog.push(product);
                 filteredCatalog(catalog());
@@ -106,18 +104,17 @@ var vm = (function () {
     }
 
     var openEditModal = function (product) {
-        var pm = ProductManager(product);
-        selectedProduct(pm.clone());
+        selectedProduct(ProductService.clone(product));
         $('#editProductModal').modal('show');
     };
 
     var saveProduct = function (product) {
-        dataContext.save(ko.toJS(product)).done(function(response){
+        ProductResource.save(ko.toJS(product)).done(function(response){
             var tmpCatalog = catalog();
             var i = tmpCatalog.length;
             while(i--){
                 if(tmpCatalog[i].id() === product.id()){
-                    tmpCatalog[i] = product;
+                    ProductService.refresh(tmpCatalog[i],product);
                 }
             }
             catalog(tmpCatalog);
@@ -139,7 +136,7 @@ var vm = (function () {
     };
 
     var deleteProduct = function (product){
-        dataContext.remove(product.id())
+        ProductResource.remove(product.id())
             .done(function(response){
                 catalog.remove(product);
                 filteredCatalog(catalog());
@@ -165,7 +162,7 @@ var vm = (function () {
             customer: ko.toJS(customerData)
         };
         console.log(data);
-        orderContext.save(data)
+        OrderResource.save(data)
             .done(function(response){
                 cart([]);
                 hideCartDetails();
@@ -176,7 +173,7 @@ var vm = (function () {
     };
 
     var showDescription = function (data) {
-        dataContext.get(data.id())
+        ProductResource.get(data.id())
             .done(function(response){
                 alert(response.data.description);
             });
@@ -185,7 +182,7 @@ var vm = (function () {
     var allCallbackSuccess = function(response){
         catalog([]);
         response.data.forEach(function(item){
-            catalog.push(new Product(item.id,item.name,item.price,item.stock));
+            catalog.push(Product(item.id,item.name,item.price,item.stock));
         });
         filteredCatalog(catalog());
         if (catalog().length) {
@@ -195,7 +192,7 @@ var vm = (function () {
     };
 
     var activate = function () {
-        dataContext.all()
+        ProductResource.all()
             .done(allCallbackSuccess);
     };
 
@@ -236,6 +233,11 @@ var vm = (function () {
 //ko External Template Settings
 infuser.defaults.templateSuffix = ".html";
 infuser.defaults.templateUrl = "views";
-ko.validation.init();
 
+ko.validation.init({
+    registerExtenders: true,
+    messagesOnModified: true,
+    insertMessages: true,
+    parseInputAttributes: true
+});
 vm.activate();

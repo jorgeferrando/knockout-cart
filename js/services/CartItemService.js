@@ -1,8 +1,6 @@
-var CartItemManager = function(cartItem) {
+var CartItemService = (function() {
 
-    var cartItem = cartItem;
-
-    var addUnit = function () {
+    var addUnit = function (cartItem) {
         var u = cartItem.units();
         var _stock =  cartItem.product.stock();
         if (_stock === 0) {
@@ -12,7 +10,7 @@ var CartItemManager = function(cartItem) {
         cartItem.product.stock(--_stock);
     };
 
-    var removeUnit = function () {
+    var removeUnit = function (cartItem) {
         var u =  cartItem.units();
         var _stock =  cartItem.product.stock();
         if (u === 0) {
@@ -27,4 +25,4 @@ var CartItemManager = function(cartItem) {
         addUnit:addUnit,
         removeUnit:removeUnit
     };
-}
+})();

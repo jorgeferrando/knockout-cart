@@ -20,13 +20,11 @@ ko.components.register('add-to-cart-button', {
             }
 
             if (item) {
-                var cm = CartItemManager(item);
-                cm.addUnit();
+                CartItemService.addUnit(item);
             } else {
-                item = CartProduct(data,1);
+                item = CartItem(data,1);
                 tmpCart.push(item);
-                var pm = ProductManager(item.product);
-                pm.decreaseStock();
+                ProductService.decreaseStock(item.product);
             }
 
             this.cart(tmpCart);

@@ -1,5 +1,5 @@
 "use strict";
-function ProductService() {
+var  ProductResource = (function () {
     function all() {
         return $.ajax({
             type: 'GET',
@@ -41,4 +41,4 @@ function ProductService() {
         save: save,
         remove: remove
     };
-}
+})();

@@ -1,5 +1,5 @@
 "use strict";
-function OrderService() {
+var OrderResource = (function () {
     function save(order) {
         return $.ajax({
             type: 'PUT',
@@ -10,5 +10,5 @@ function OrderService() {
     return {
         save: save
     };
-}
+})();
 

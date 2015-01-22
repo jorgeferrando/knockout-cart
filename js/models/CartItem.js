@@ -1,4 +1,4 @@
-var CartProduct = function (product, units) {
+var CartItem = function (product, units) {
     "use strict";
 
     var
