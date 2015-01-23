@@ -141,7 +141,7 @@ var vm = (function () {
                 catalog.remove(product);
                 filteredCatalog(catalog());
                 removeFromCartByProduct(product);
-            });
+            })
     };
 
     var hideCartDetails = function () {
@@ -229,6 +229,11 @@ var vm = (function () {
         countries: countries
     };
 })();
+
+$( document ).ajaxError(function(event,response) {
+    console.error(response);
+    alert("Error in the communication. Check the console!");
+});
 
 //ko External Template Settings
 infuser.defaults.templateSuffix = ".html";
