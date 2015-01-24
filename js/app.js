@@ -21,7 +21,7 @@ define([
 
     //EVENTS
     'events/cart'
-], function(bs, ko, koAmdHelpers, koValidation, icheck, ViewModel) {
+], function(bs, ko, koAmdHelpers, koValidation, icheck, vm) {
     //ko External Template Settings
     ko.amdTemplateEngine.defaultPath = "../views";
     ko.amdTemplateEngine.defaultSuffix = ".html";
@@ -38,7 +38,6 @@ define([
         alert("Error in the communication. Check the console!");
     });
 
-    var vm = new ViewModel();
     vm.activate();
 
     return vm;

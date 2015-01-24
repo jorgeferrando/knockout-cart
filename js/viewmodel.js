@@ -6,7 +6,6 @@ define([
     'resources/ProductResource',
     'resources/OrderResource'
 ],function (ko, Product, Customer, ProductService, ProductResource, OrderResource) {
-    var vm = function() {
         var debug = ko.observable(false);
         var countries = ko.observableArray(['United States','United Kingdom']);
 
@@ -235,6 +234,4 @@ define([
             customer: Customer,
             countries: countries
         };
-    };
-    return vm;
 });
