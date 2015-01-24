@@ -2,7 +2,7 @@ var Shop;
 Shop = Shop || {};
 Shop.ViewModel = (function(ko, Models,Services,Resources){
     "use strict";
-    var customer = Models.Customer;
+    var customer = new Models.Customer();
     var Product = Models.Product;
     var ProductService = Services.ProductService;
     var ProductResource = Resources.ProductResource;
