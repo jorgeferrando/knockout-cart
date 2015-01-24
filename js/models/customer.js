@@ -1,5 +1,7 @@
-var CustomerData = (function () {
-
+var Shop;
+Shop = Shop || {};
+Shop.Models = Shop.Models || {};
+Shop.Models.Customer = (function(ko){
     var firstName = ko.observable("").extend({
         required: true
     });
@@ -42,4 +44,4 @@ var CustomerData = (function () {
         fullAddress: fullAddress,
         errors: errors
     };
-})();
+})(ko);

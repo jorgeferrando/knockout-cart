@@ -2,7 +2,7 @@ var Shop;
 Shop = Shop || {};
 Shop.ViewModel = (function(vm){
     "use strict";
-    var vm = function() {
+    vm = function() {
         var customer = CustomerData;
         var debug = ko.observable(false);
         var countries = ko.observableArray(['United States','United Kingdom']);
