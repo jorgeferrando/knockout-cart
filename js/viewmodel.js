@@ -1,9 +1,14 @@
 var Shop;
 Shop = Shop || {};
-Shop.ViewModel = (function(ko, Customer, Product, ProductService){
+Shop.ViewModel = (function(ko, Models,Services,Resources){
     "use strict";
     var vm = function() {
-        var customer = Customer;
+        var customer = Models.Customer;
+        var Product = Models.Product;
+        var ProductService = Services.ProductService;
+        var ProductResource = Resources.ProductResource;
+        var OrderResource = Resources.OrderResource;
+
         var debug = ko.observable(false);
         var countries = ko.observableArray(['United States','United Kingdom']);
 
@@ -235,7 +240,7 @@ Shop.ViewModel = (function(ko, Customer, Product, ProductService){
         };
     };
     return vm;
-})(ko, Shop.Models.Customer, Shop.Models.Product, Shop.Services.ProductService);
+})(ko, Shop.Models, Shop.Services, Shop.Resources);
 
 $( document ).ajaxError(function(event,response) {
     console.error(response);

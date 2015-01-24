@@ -1,5 +1,7 @@
-"use strict";
-var OrderResource = (function () {
+var Shop;
+Shop = Shop || {};
+Shop.Resources = Shop.Resources || {};
+Shop.Resources.OrderResource = (function ($) {
     function save(order) {
         return $.ajax({
             type: 'PUT',
@@ -10,5 +12,5 @@ var OrderResource = (function () {
     return {
         save: save
     };
-})();
+})(jQuery);
 

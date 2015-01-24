@@ -1,5 +1,7 @@
-"use strict";
-var  ProductResource = (function () {
+var Shop;
+Shop = Shop || {};
+Shop.Resources = Shop.Resources || {};
+Shop.Resources.ProductResource = (function ($) {
     function all() {
         return $.ajax({
             type: 'GET',
@@ -41,4 +43,4 @@ var  ProductResource = (function () {
         save: save,
         remove: remove
     };
-})();
+})(jQuery);
