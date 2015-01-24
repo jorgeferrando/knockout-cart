@@ -1,9 +1,9 @@
 var Shop;
 Shop = Shop || {};
-Shop.ViewModel = (function(vm){
+Shop.ViewModel = (function(ko, Customer, Product, CartProduct){
     "use strict";
-    vm = function() {
-        var customer = CustomerData;
+    var vm = function() {
+        var customer = Customer;
         var debug = ko.observable(false);
         var countries = ko.observableArray(['United States','United Kingdom']);
 
@@ -233,7 +233,7 @@ Shop.ViewModel = (function(vm){
         };
     };
     return vm;
-})(Shop.ViewModel || {});
+})(ko, Shop.Models.Customer, Shop.Models.Product, Shop.Models.CartProduct);
 
 $( document ).ajaxError(function(event,response) {
     console.error(response);
