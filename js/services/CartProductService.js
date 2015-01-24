@@ -1,7 +1,4 @@
-var Shop;
-Shop = Shop || {};
-Shop.Services = Shop.Services || {};
-Shop.Services.CartProductService = (function(){
+define([],function(){
     var addUnit = function (cartItem) {
         var u = cartItem.units();
         var _stock =  cartItem.product.stock();
@@ -27,4 +24,4 @@ Shop.Services.CartProductService = (function(){
         addUnit:addUnit,
         removeUnit:removeUnit
     };
-})();
+});

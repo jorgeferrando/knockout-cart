@@ -1,5 +1,7 @@
 //Event handling
-(function() {
+define([
+    'jquery','viewmodel','services/CartProductService'
+], function(vm, CartProductService) {
     "use strict";
     $(document).on("click","#confirmOrderBtn", function() {
         vm.showOrder();
@@ -16,11 +18,11 @@
     });
 
     $(document).on("addUnit",function(event, data){
-        Shop.Services.CartProductService.addUnit(data);
+        CartProductService.addUnit(data);
     });
 
     $(document).on("removeUnit",function(event, data){
-        Shop.Services.CartProductService.removeUnit(data);
+        CartProductService.removeUnit(data);
     });
-})();
+})
 

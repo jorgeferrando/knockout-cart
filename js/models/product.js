@@ -1,7 +1,4 @@
-var Shop;
-Shop = Shop || {};
-Shop.Models = Shop.Models || {};
-Shop.Models.Product = (function(ko){
+define(['knockout','ko.validation'],function(ko){
     return function (id,name,price,stock) {
         var
             _id = ko.observable(id),
@@ -36,4 +33,4 @@ Shop.Models.Product = (function(ko){
             errors: errors
         };
     };
-})(ko);
+});

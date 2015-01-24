@@ -1,7 +1,4 @@
-var Shop;
-Shop = Shop || {};
-Shop.Services = Shop.Services || {};
-Shop.Services.ProductService = (function(Product) {
+define([],function(){
     var hasStock = function (product) {
         return product.stock() > 0;
     };
@@ -30,4 +27,4 @@ Shop.Services.ProductService = (function(Product) {
         clone:clone,
         refresh: refresh
     };
-})(Shop.Models.Product);
+});

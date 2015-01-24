@@ -26,8 +26,20 @@ define([
     ko.amdTemplateEngine.defaultPath = "../views";
     ko.amdTemplateEngine.defaultSuffix = ".html";
     ko.amdTemplateEngine.defaultRequireTextPluginName = "text";
-    ko.validation.init();
+    ko.validation.init({
+        registerExtenders: true,
+        messagesOnModified: true,
+        insertMessages: true,
+        parseInputAttributes: true
+    });
+
+    $( document ).ajaxError(function(event,response) {
+        console.error(response);
+        alert("Error in the communication. Check the console!");
+    });
 
     var vm = new ViewModel();
     vm.activate();
+
+    return vm;
 });

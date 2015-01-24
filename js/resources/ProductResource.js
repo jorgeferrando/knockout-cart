@@ -1,7 +1,4 @@
-var Shop;
-Shop = Shop || {};
-Shop.Resources = Shop.Resources || {};
-Shop.Resources.ProductResource = (function ($) {
+define(['jquery'],function($){
     function all() {
         return $.ajax({
             type: 'GET',
@@ -43,4 +40,4 @@ Shop.Resources.ProductResource = (function ($) {
         save: save,
         remove: remove
     };
-})(jQuery);
+});

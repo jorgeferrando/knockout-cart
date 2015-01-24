@@ -1,14 +1,12 @@
-var Shop;
-Shop = Shop || {};
-Shop.ViewModel = (function(ko, Models,Services,Resources){
-    "use strict";
+define([
+    'knockout',
+    'models/Product',
+    'models/Customer',
+    'services/ProductService',
+    'resources/ProductResource',
+    'resources/OrderResource'
+],function (ko, Product, Customer, ProductService, ProductResource, OrderResource) {
     var vm = function() {
-        var customer = Models.Customer;
-        var Product = Models.Product;
-        var ProductService = Services.ProductService;
-        var ProductResource = Resources.ProductResource;
-        var OrderResource = Resources.OrderResource;
-
         var debug = ko.observable(false);
         var countries = ko.observableArray(['United States','United Kingdom']);
 
@@ -169,9 +167,8 @@ Shop.ViewModel = (function(ko, Models,Services,Resources){
         var finishOrder = function() {
             var data = {
                 order: ko.toJS(cart),
-                customer: ko.toJS(customer)
+                customer: ko.toJS(Customer)
             };
-            console.log(data);
             OrderResource.save(data)
                 .done(function(response){
                     cart([]);
@@ -235,27 +232,9 @@ Shop.ViewModel = (function(ko, Models,Services,Resources){
             saveProduct: saveProduct,
             cancelEdition: cancelEdition,
             deleteProduct: deleteProduct,
-            customer: customer,
+            customer: Customer,
             countries: countries
         };
     };
     return vm;
-})(ko, Shop.Models, Shop.Services, Shop.Resources);
-
-$( document ).ajaxError(function(event,response) {
-    console.error(response);
-    alert("Error in the communication. Check the console!");
 });
-
-//ko External Template Settings
-infuser.defaults.templateSuffix = ".html";
-infuser.defaults.templateUrl = "views";
-
-ko.validation.init({
-    registerExtenders: true,
-    messagesOnModified: true,
-    insertMessages: true,
-    parseInputAttributes: true
-});
-var vm = Shop.ViewModel();
-vm.activate();

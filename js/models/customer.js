@@ -1,26 +1,23 @@
-var Shop;
-Shop = Shop || {};
-Shop.Models = Shop.Models || {};
-Shop.Models.Customer = (function(ko){
-    var firstName = ko.observable("").extend({
+define(['knockout','ko.validation'],function(ko){
+    var firstName = ko.observable("John").extend({
         required: true
     });
-    var lastName = ko.observable("").extend({
+    var lastName = ko.observable("Doe").extend({
         required: true,
         minLength: 3
     });
     var fullName = ko.computed(function(){
         return firstName() + " " + lastName();
     });
-    var address = ko.observable("").extend({
+    var address = ko.observable("Baker Street").extend({
         required: true,
         minLength: 5
     });
-    var email = ko.observable("").extend({
+    var email = ko.observable("john@doe.com").extend({
         required: true,
         email: true
     });
-    var zipCode = ko.observable("").extend({
+    var zipCode = ko.observable("12345").extend({
         required: true,
         minLength: 3,
         pattern: {
@@ -44,4 +41,4 @@ Shop.Models.Customer = (function(ko){
         fullAddress: fullAddress,
         errors: errors
     };
-})(ko);
+});

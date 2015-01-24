@@ -1,10 +1,7 @@
-var Shop;
-Shop = Shop || {};
-Shop.Resources = Shop.Resources || {};
-Shop.Resources.OrderResource = (function ($) {
+define(['jquery'],function($){
     function save(order) {
         return $.ajax({
-            type: 'PUT',
+            type: 'POST',
             url: '/order',
             data: order
         });
@@ -12,5 +9,5 @@ Shop.Resources.OrderResource = (function ($) {
     return {
         save: save
     };
-})(jQuery);
+});
 
