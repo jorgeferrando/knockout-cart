@@ -16,12 +16,11 @@
     });
 
     $(document).on("addUnit",function(event, data){
-        CartItemService.addUnit(data);
+        Shop.Services.CartProductService.addUnit(data);
     });
 
     $(document).on("removeUnit",function(event, data){
-        CartItemService.removeUnit(data);
-
+        Shop.Services.CartProductService.removeUnit(data);
     });
 })();
 

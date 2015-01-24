@@ -1,6 +1,6 @@
 var Shop;
 Shop = Shop || {};
-Shop.ViewModel = (function(ko, Customer, Product, CartProduct){
+Shop.ViewModel = (function(ko, Customer, Product, ProductService){
     "use strict";
     var vm = function() {
         var customer = Customer;
@@ -103,7 +103,9 @@ Shop.ViewModel = (function(ko, Customer, Product, CartProduct){
                     item = tmpCart[i];
                 }
             }
-            removeFromCart(item);
+            if (item) {
+                removeFromCart(item);
+            }
         }
 
         var openEditModal = function (product) {
@@ -162,7 +164,7 @@ Shop.ViewModel = (function(ko, Customer, Product, CartProduct){
         var finishOrder = function() {
             var data = {
                 order: ko.toJS(cart),
-                customer: ko.toJS(customerData)
+                customer: ko.toJS(customer)
             };
             console.log(data);
             OrderResource.save(data)
@@ -233,7 +235,7 @@ Shop.ViewModel = (function(ko, Customer, Product, CartProduct){
         };
     };
     return vm;
-})(ko, Shop.Models.Customer, Shop.Models.Product, Shop.Models.CartProduct);
+})(ko, Shop.Models.Customer, Shop.Models.Product, Shop.Services.ProductService);
 
 $( document ).ajaxError(function(event,response) {
     console.error(response);

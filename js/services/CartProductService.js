@@ -1,5 +1,7 @@
-var CartItemService = (function() {
-
+var Shop;
+Shop = Shop || {};
+Shop.Services = Shop.Services || {};
+Shop.Services.CartProductService = (function(){
     var addUnit = function (cartItem) {
         var u = cartItem.units();
         var _stock =  cartItem.product.stock();

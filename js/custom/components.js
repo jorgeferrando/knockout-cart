@@ -4,10 +4,17 @@ ko.components.register('add-to-cart-button', {
         this.cart = params.cart;
 
         this.addToCart = function() {
+
+            var CartProduct = Shop.Models.CartProduct;
+            var CartProductService = Shop.Services.CartProductService;
+            var ProductService = Shop.Services.ProductService;
+
             var data = this.item;
             var tmpCart = this.cart();
             var n = tmpCart.length;
             var item = null;
+
+
 
             if(data.stock()<1) {
                 return;
@@ -20,9 +27,9 @@ ko.components.register('add-to-cart-button', {
             }
 
             if (item) {
-                CartItemService.addUnit(item);
+                CartProductService.addUnit(item);
             } else {
-                item = CartItem(data,1);
+                item = CartProduct(data,1);
                 tmpCart.push(item);
                 ProductService.decreaseStock(item.product);
             }
